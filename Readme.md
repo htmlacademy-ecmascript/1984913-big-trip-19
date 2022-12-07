@@ -1,7 +1,7 @@
 # Проект «Большое путешествие»
 
-* Студент: [Анастасия Меркулова](https://up.htmlacademy.ru/ecmascript/19/user/1984913).
-* Наставник: `Неизвестно`.
+- Студент: [Анастасия Меркулова](https://up.htmlacademy.ru/ecmascript/19/user/1984913).
+- Наставник: [Руслан Гусейнов](https://htmlacademy.ru/profile/id1330673).
 
 ---
 
