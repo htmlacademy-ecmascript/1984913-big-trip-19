@@ -9,18 +9,21 @@ const createWaypointTemplate = (waypoint)=>{
   const endTime = formatTime(date_to);
   const duration = getDurationInfo(countDuration(date_from,date_to));
   const favouriteClassName = is_favorite ? 'event__favorite-btn--active' : '';
+
+  const formatDatetime = (datetime, start,end)=> datetime.slice(start, end);
+
   return(` <li class="trip-events__item">
 <div class="event">
-  <time class="event__date" datetime="2019-03-18">${date}</time>
+  <time class="event__date" datetime=${formatDatetime(date_from, 0,10)}>${date}</time>
   <div class="event__type">
     <img class="event__type-icon" width="42" height="42" src="img/icons/taxi.png" alt="Event type icon">
   </div>
   <h3 class="event__title">${type} ${destination.name}</h3>
   <div class="event__schedule">
     <p class="event__time">
-      <time class="event__start-time" datetime="2019-03-18T10:30">${startTime}</time>
+      <time class="event__start-time" datetime=${formatDatetime(date_from, 0,16)}>${startTime}</time>
       &mdash;
-      <time class="event__end-time" datetime="2019-03-18T11:00">${endTime}</time>
+      <time class="event__end-time" datetime=${formatDatetime(date_to,0, 16)}>${endTime}</time>
     </p>
     <p class="event__duration">${duration}</p>
   </div>

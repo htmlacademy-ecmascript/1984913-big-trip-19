@@ -16,8 +16,8 @@ export default class ListPresenter{
     this.waypoints = [...this.waypointsListModel.getWaypoints()];
     render(new FiltersView(), this.filtersContainer);
     render(new SortingView(), this.eventsContainer);
-    render(new EditFormView(), this.eventsListComponent.getElement(), RenderPosition.AFTERBEGIN);
-    for(let i = 0; i < this.waypoints.length; i++){
+    render(new EditFormView({waypoint:this.waypoints[0]}), this.eventsListComponent.getElement(), RenderPosition.AFTERBEGIN);
+    for(let i = 1; i < this.waypoints.length; i++){
       render(new WaypointView({waypoint:this.waypoints[i]}), this.eventsListComponent.getElement());
     }
     render(this.eventsListComponent, this.eventsContainer);
