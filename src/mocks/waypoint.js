@@ -68,46 +68,46 @@ const destinations = [
 const mockWaypoints = [
   {
     'base_price': 1100,
-    'date_from': '2019-06-10T22:55:56.845Z',
-    'date_to': '2019-07-11T11:22:13.375Z',
+    'date_from': '2019-06-10T11:55:56.845Z',
+    'date_to': '2019-06-11T15:22:13.375Z',
     'destination': getRandomArrayItem(destinations),
     'id': '0',
     'is_favorite': false,
-    'offers': getRandomArrayItem(offers),
+    'offers': [getRandomArrayItem(offers)],
     'type': getRandomArrayItem(WAYPOINT_TYPES)
   },
   {
     'base_price': 2200,
-    'date_from': '2019-07-10T22:55:56.845Z',
-    'date_to': '2019-08-11T11:22:13.375Z',
+    'date_from': '2019-07-11T10:10:56.845Z',
+    'date_to': '2019-07-11T15:07:13.375Z',
     'destination': getRandomArrayItem(destinations),
-    'id': '0',
+    'id': '1',
     'is_favorite': true,
-    'offers':  getRandomArrayItem(offers),
+    'offers':  [getRandomArrayItem(offers)],
     'type': getRandomArrayItem(WAYPOINT_TYPES)
   },
   {
     'base_price': 3500,
-    'date_from': '2019-08-10T22:55:56.845Z',
-    'date_to': '2019-09-11T11:22:13.375Z',
+    'date_from': '2019-08-12T08:35:56.845Z',
+    'date_to': '2019-08-12T19:45:13.375Z',
     'destination': getRandomArrayItem(destinations),
-    'id': '0',
+    'id': '2',
     'is_favorite': false,
-    'offers':  getRandomArrayItem(offers),
+    'offers': [ getRandomArrayItem(offers)],
     'type': getRandomArrayItem(WAYPOINT_TYPES)
   },
   {
     'base_price': 700,
-    'date_from': '2019-09-10T22:55:56.845Z',
-    'date_to': '2019-10-11T11:22:13.375Z',
+    'date_from': '2019-09-13T11:13:56.845Z',
+    'date_to': '2019-09-13T13:15:13.375Z',
     'destination': getRandomArrayItem(destinations),
-    'id': '0',
+    'id': '3',
     'is_favorite': false,
-    'offers':  getRandomArrayItem(offers),
+    'offers':  [getRandomArrayItem(offers)],
     'type': getRandomArrayItem(WAYPOINT_TYPES)
   }
 ];
 
-const getRandomWayPoint = ()=> getRandomArrayItem(mockWaypoints);
+const getRandomWaypoint = ()=> getRandomArrayItem(mockWaypoints);
 
-export {getRandomWayPoint};
+export {getRandomWaypoint};
