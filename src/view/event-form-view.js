@@ -44,7 +44,7 @@ const createEventFormTemplate = (waypoint)=>{
   const offersTemplate = createFormOffersTemplate(offers);
   const destinationInfo = getDestination(destination);
   const controlsTemplate = createFormControlsTemplate('edit');
-  return(`            <li class="trip-events__item">
+  return(`   <li class="trip-events__item">
 <form class="event event--edit" action="#" method="post">
   <header class="event__header">
   <div class="event__type-wrapper">
