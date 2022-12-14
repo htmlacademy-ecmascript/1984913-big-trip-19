@@ -2,6 +2,7 @@ const WAYPOINTS_AMOUNT = 4;
 const WAYPOINT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 const DATE_FORMAT = 'MMM D';
 const TIME_FORMAT = 'HH:mm';
+const EDIT_DATETIME_FORMAT = 'DD/MM/YY HH:mm';
 
 const BLANK_WAYPOINT = {
   'base_price': '',
@@ -15,4 +16,4 @@ const BLANK_WAYPOINT = {
 };
 
 
-export {WAYPOINTS_AMOUNT, WAYPOINT_TYPES, DATE_FORMAT, TIME_FORMAT, BLANK_WAYPOINT};
+export {WAYPOINTS_AMOUNT, WAYPOINT_TYPES, DATE_FORMAT, TIME_FORMAT, BLANK_WAYPOINT, EDIT_DATETIME_FORMAT};

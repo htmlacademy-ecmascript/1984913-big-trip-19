@@ -1,11 +1,13 @@
 import dayjs from 'dayjs';
-import { DATE_FORMAT, TIME_FORMAT } from './consts';
+import { DATE_FORMAT, TIME_FORMAT, EDIT_DATETIME_FORMAT } from './consts';
 
 const getRandomArrayItem = (items)=> items[Math.floor(Math.random() * items.length)];
 
 const formatDate = (date)=> date ? dayjs(date).format(DATE_FORMAT) : '';
 
 const formatTime = (time)=> time ? dayjs(time).format(TIME_FORMAT) : '';
+
+const formatEditDatetime = (datetime)=> datetime ? dayjs(datetime).format(EDIT_DATETIME_FORMAT) : '';
 
 const getDurationInfo = ({days, hours, minutes}) =>{
   let durationInfo = '';
@@ -36,4 +38,14 @@ const countDuration = (start, end)=> {
     minutes};
 };
 
-export {getRandomArrayItem, formatDate, formatTime, countDuration, getDurationInfo};
+const formatDatetime = (datetime, start,end)=> datetime.slice(start, end);
+
+export {
+  getRandomArrayItem,
+  formatDate,
+  formatTime,
+  countDuration,
+  getDurationInfo,
+  formatDatetime,
+  formatEditDatetime
+};

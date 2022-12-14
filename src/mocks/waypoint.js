@@ -1,7 +1,7 @@
 import { WAYPOINT_TYPES } from '../consts';
 import { getRandomArrayItem } from '../utils';
 
-const offers = [{
+const mockOffers = [{
   'id': 1,
   'title': 'Upgrade to a business class',
   'price': 120
@@ -55,7 +55,7 @@ const destinations = [
   },
   {
     'id': 4,
-    'description': 'Geneva, is a beautiful city. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.',
+    'description': 'Mont Blanc, is a beautiful city. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.',
     'name': 'Mont Blanc',
     'pictures': [
       {
@@ -70,44 +70,50 @@ const mockWaypoints = [
     'base_price': 1100,
     'date_from': '2019-06-10T11:55:56.845Z',
     'date_to': '2019-06-11T15:22:13.375Z',
-    'destination': getRandomArrayItem(destinations),
+    'destination': getRandomArrayItem(destinations).id,
     'id': '0',
     'is_favorite': false,
-    'offers': [getRandomArrayItem(offers)],
+    'offers': [getRandomArrayItem(mockOffers).id, getRandomArrayItem(mockOffers).id],
     'type': getRandomArrayItem(WAYPOINT_TYPES)
   },
   {
     'base_price': 2200,
     'date_from': '2019-07-11T10:10:56.845Z',
     'date_to': '2019-07-11T15:07:13.375Z',
-    'destination': getRandomArrayItem(destinations),
+    'destination': getRandomArrayItem(destinations).id,
     'id': '1',
     'is_favorite': true,
-    'offers':  [getRandomArrayItem(offers)],
+    'offers':  [getRandomArrayItem(mockOffers).id],
     'type': getRandomArrayItem(WAYPOINT_TYPES)
   },
   {
     'base_price': 3500,
     'date_from': '2019-08-12T08:35:56.845Z',
     'date_to': '2019-08-12T19:45:13.375Z',
-    'destination': getRandomArrayItem(destinations),
+    'destination': getRandomArrayItem(destinations).id,
     'id': '2',
     'is_favorite': false,
-    'offers': [ getRandomArrayItem(offers)],
+    'offers': [ getRandomArrayItem(mockOffers).id],
     'type': getRandomArrayItem(WAYPOINT_TYPES)
   },
   {
     'base_price': 700,
     'date_from': '2019-09-13T11:13:56.845Z',
     'date_to': '2019-09-13T13:15:13.375Z',
-    'destination': getRandomArrayItem(destinations),
+    'destination': getRandomArrayItem(destinations).id,
     'id': '3',
     'is_favorite': false,
-    'offers':  [getRandomArrayItem(offers)],
+    'offers':  [getRandomArrayItem(mockOffers).id],
     'type': getRandomArrayItem(WAYPOINT_TYPES)
   }
 ];
 
 const getRandomWaypoint = ()=> getRandomArrayItem(mockWaypoints);
 
-export {getRandomWaypoint};
+const getDestination = (id)=> destinations.find((destination)=>destination.id === id);
+
+const getOffer = (id)=> mockOffers.find((offer)=>offer.id === id);
+
+const isOfferChecked = (pointOffers, offer)=> !!pointOffers.find((item)=> offer.id === item);
+
+export {getRandomWaypoint, getDestination, getOffer, mockOffers, isOfferChecked};

@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 import {createElement} from '../render.js';
-import { formatDate, formatTime, countDuration, getDurationInfo } from '../utils.js';
+import { formatDate, formatTime, countDuration, getDurationInfo, formatDatetime } from '../utils.js';
+import { getDestination,getOffer } from '../mocks/waypoint.js';
 
 const createWaypointTemplate = (waypoint)=>{
   const {base_price, date_from, date_to, destination, is_favorite, offers, type } = waypoint;
@@ -9,8 +10,7 @@ const createWaypointTemplate = (waypoint)=>{
   const endTime = formatTime(date_to);
   const duration = getDurationInfo(countDuration(date_from,date_to));
   const favouriteClassName = is_favorite ? 'event__favorite-btn--active' : '';
-
-  const formatDatetime = (datetime, start,end)=> datetime.slice(start, end);
+  const destinationInfo = getDestination(destination);
 
   return(` <li class="trip-events__item">
 <div class="event">
@@ -18,7 +18,7 @@ const createWaypointTemplate = (waypoint)=>{
   <div class="event__type">
     <img class="event__type-icon" width="42" height="42" src="img/icons/taxi.png" alt="Event type icon">
   </div>
-  <h3 class="event__title">${type} ${destination.name}</h3>
+  <h3 class="event__title">${type} ${destinationInfo.name}</h3>
   <div class="event__schedule">
     <p class="event__time">
       <time class="event__start-time" datetime=${formatDatetime(date_from, 0,16)}>${startTime}</time>
@@ -32,11 +32,14 @@ const createWaypointTemplate = (waypoint)=>{
   </p>
   <h4 class="visually-hidden">Offers:</h4>
   <ul class="event__selected-offers">
- ${offers.map((offer)=>(`<li class="event__offer">
-      <span class="event__offer-title">${offer.title}</span>
+ ${offers.map((offer)=>{
+      const offerInfo = getOffer(offer);
+      return(`<li class="event__offer">
+      <span class="event__offer-title">${offerInfo.title}</span>
       &plus;&euro;&nbsp;
-      <span class="event__offer-price">${offer.price}</span>
-    </li>`)) }
+      <span class="event__offer-price">${offerInfo.price}</span>
+    </li>`);}).join('')
+    }
   </ul>
   <button class="event__favorite-btn ${favouriteClassName}" type="button">
     <span class="visually-hidden">Add to favorite</span>

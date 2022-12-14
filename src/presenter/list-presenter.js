@@ -1,7 +1,7 @@
 import WaypointView from '../view/waypoint-view';
 import FiltersView from '../view/filters-view';
 import SortingView from '../view/sorting-view';
-import EditFormView from '../view/edit-form-view';
+import EventFormView from '../view/event-form-view';
 import EventsListView from '../view/events-list-view';
 import { render, RenderPosition } from '../render';
 export default class ListPresenter{
@@ -16,7 +16,7 @@ export default class ListPresenter{
     this.waypoints = [...this.waypointsListModel.getWaypoints()];
     render(new FiltersView(), this.filtersContainer);
     render(new SortingView(), this.eventsContainer);
-    render(new EditFormView({waypoint:this.waypoints[0]}), this.eventsListComponent.getElement(), RenderPosition.AFTERBEGIN);
+    render(new EventFormView({waypoint:this.waypoints[0]}), this.eventsListComponent.getElement(), RenderPosition.AFTERBEGIN);
     for(let i = 1; i < this.waypoints.length; i++){
       render(new WaypointView({waypoint:this.waypoints[i]}), this.eventsListComponent.getElement());
     }
