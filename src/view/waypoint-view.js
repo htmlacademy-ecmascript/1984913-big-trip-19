@@ -1,34 +1,33 @@
-/* eslint-disable camelcase */
 import {createElement} from '../render.js';
 import { formatDate, formatTime, countDuration, getDurationInfo, formatDatetime } from '../utils.js';
 import { getDestination,getOffer } from '../mocks/waypoint.js';
 
 const createWaypointTemplate = (waypoint)=>{
-  const {base_price, date_from, date_to, destination, is_favorite, offers, type } = waypoint;
-  const date = formatDate(date_from);
-  const startTime = formatTime(date_from);
-  const endTime = formatTime(date_to);
-  const duration = getDurationInfo(countDuration(date_from,date_to));
-  const favouriteClassName = is_favorite ? 'event__favorite-btn--active' : '';
+  const {basePrice, dateFrom, dateTo, destination, isFavorite, offers, type } = waypoint;
+  const date = formatDate(dateFrom);
+  const startTime = formatTime(dateFrom);
+  const endTime = formatTime(dateTo);
+  const duration = getDurationInfo(countDuration(dateFrom,dateTo));
+  const favouriteClassName = isFavorite ? 'event__favorite-btn--active' : '';
   const destinationInfo = getDestination(destination);
 
   return(` <li class="trip-events__item">
 <div class="event">
-  <time class="event__date" datetime=${formatDatetime(date_from, 0,10)}>${date}</time>
+  <time class="event__date" datetime=${formatDatetime(dateFrom, 0,10)}>${date}</time>
   <div class="event__type">
     <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
   </div>
   <h3 class="event__title">${type} ${destinationInfo.name}</h3>
   <div class="event__schedule">
     <p class="event__time">
-      <time class="event__start-time" datetime=${formatDatetime(date_from, 0,16)}>${startTime}</time>
+      <time class="event__start-time" datetime=${formatDatetime(dateFrom, 0,16)}>${startTime}</time>
       &mdash;
-      <time class="event__end-time" datetime=${formatDatetime(date_to,0, 16)}>${endTime}</time>
+      <time class="event__end-time" datetime=${formatDatetime(dateTo,0, 16)}>${endTime}</time>
     </p>
     <p class="event__duration">${duration}</p>
   </div>
   <p class="event__price">
-    &euro;&nbsp;<span class="event__price-value">${base_price}</span>
+    &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
   </p>
   <h4 class="visually-hidden">Offers:</h4>
   <ul class="event__selected-offers">

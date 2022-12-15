@@ -67,42 +67,42 @@ const destinations = [
 
 const mockWaypoints = [
   {
-    'base_price': 1100,
-    'date_from': '2019-06-10T11:55:56.845Z',
-    'date_to': '2019-06-11T15:22:13.375Z',
+    'basePrice': 1100,
+    'dateFrom': '2019-06-10T11:55:56.845Z',
+    'dateTo': '2019-06-11T15:22:13.375Z',
     'destination': getRandomArrayItem(destinations).id,
     'id': '0',
-    'is_favorite': false,
+    'isFavorite': false,
     'offers': [getRandomArrayItem(mockOffers).id, getRandomArrayItem(mockOffers).id],
     'type': getRandomArrayItem(WAYPOINT_TYPES)
   },
   {
-    'base_price': 2200,
-    'date_from': '2019-07-11T10:10:56.845Z',
-    'date_to': '2019-07-11T15:07:13.375Z',
+    'basePrice': 2200,
+    'dateFrom': '2019-07-11T10:10:56.845Z',
+    'dateTo': '2019-07-11T15:07:13.375Z',
     'destination': getRandomArrayItem(destinations).id,
     'id': '1',
-    'is_favorite': true,
+    'isFavorite': true,
     'offers':  [getRandomArrayItem(mockOffers).id],
     'type': getRandomArrayItem(WAYPOINT_TYPES)
   },
   {
-    'base_price': 3500,
-    'date_from': '2019-08-12T08:35:56.845Z',
-    'date_to': '2019-08-12T19:45:13.375Z',
+    'basePrice': 3500,
+    'dateFrom': '2019-08-12T08:35:56.845Z',
+    'dateTo': '2019-08-12T19:45:13.375Z',
     'destination': getRandomArrayItem(destinations).id,
     'id': '2',
-    'is_favorite': false,
+    'isFavorite': false,
     'offers': [ getRandomArrayItem(mockOffers).id],
     'type': getRandomArrayItem(WAYPOINT_TYPES)
   },
   {
-    'base_price': 700,
-    'date_from': '2019-09-13T11:13:56.845Z',
-    'date_to': '2019-09-13T13:15:13.375Z',
+    'basePrice': 700,
+    'dateFrom': '2019-09-13T11:13:56.845Z',
+    'dateTo': '2019-09-13T13:15:13.375Z',
     'destination': getRandomArrayItem(destinations).id,
     'id': '3',
-    'is_favorite': false,
+    'isFavorite': false,
     'offers':  [getRandomArrayItem(mockOffers).id],
     'type': getRandomArrayItem(WAYPOINT_TYPES)
   }
