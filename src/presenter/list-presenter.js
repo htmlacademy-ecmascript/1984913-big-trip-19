@@ -5,6 +5,7 @@ import EventFormView from '../view/event-form-view';
 import EventsListView from '../view/events-list-view';
 import { render, RenderPosition } from '../render';
 import TripInfoView from '../view/trip-info-view';
+import { isEscapeKey } from '../utils';
 export default class ListPresenter{
   #headerContainer = null;
   #filtersContainer = null;
@@ -27,12 +28,51 @@ export default class ListPresenter{
     render(new TripInfoView(), this.#headerContainer, RenderPosition.AFTERBEGIN);
     render(new FiltersView(), this.#filtersContainer);
     render(new SortingView(), this.#eventsContainer);
-    render(new EventFormView({waypoint:this.#waypoints[0]}), this.#eventsListComponent.element, RenderPosition.AFTERBEGIN);
-    for(let i = 1; i < this.#waypoints.length; i++){
-      render(new WaypointView({waypoint:this.#waypoints[i]}), this.#eventsListComponent.element);
+    for(let i = 0; i < this.#waypoints.length; i++){
+      this.#renderWaypoints(this.#waypoints[i]);
     }
     render(this.#eventsListComponent, this.#eventsContainer);
   }
 
+  #renderWaypoints(waypoint){
+    const formType = 'edit';
+    const waypointComponent = new WaypointView({waypoint});
+    const eventFormComponent = new EventFormView({waypoint, formType});
+
+    const replaceComponent = (replacingComponent, replaceableComponent)=>{
+      this.#eventsListComponent.element.replaceChild(replacingComponent,replaceableComponent);
+    };
+
+    const handleEscKeyDown = (evt) => {
+      if (isEscapeKey(evt)) {
+        evt.preventDefault();
+        replaceComponent(waypointComponent.element, eventFormComponent.element);
+        document.removeEventListener('keydown', handleEscKeyDown);
+      }
+    };
+
+    waypointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', ()=>{
+      replaceComponent(eventFormComponent.element, waypointComponent.element);
+      document.addEventListener('keydown', handleEscKeyDown);
+    });
+
+    eventFormComponent.element.querySelector('.event__rollup-btn').addEventListener('click', ()=>{
+      replaceComponent( waypointComponent.element, eventFormComponent.element);
+      document.removeEventListener('keydown', handleEscKeyDown);
+    });
+
+    eventFormComponent.element.querySelector('.event--edit').addEventListener('submit', (evt)=>{
+      evt.preventDefault();
+      replaceComponent( waypointComponent.element, eventFormComponent.element);
+      document.removeEventListener('keydown', handleEscKeyDown);
+    });
+
+    eventFormComponent.element.querySelector('.event--edit').addEventListener('reset', ()=>{
+      replaceComponent( waypointComponent.element, eventFormComponent.element);
+      document.removeEventListener('keydown', handleEscKeyDown);
+    });
+
+    render(waypointComponent, this.#eventsListComponent.element);
+  }
 }
 
