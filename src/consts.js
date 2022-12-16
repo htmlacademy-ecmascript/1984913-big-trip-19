@@ -6,12 +6,12 @@ const TIME_FORMAT = 'HH:mm';
 const EDIT_DATETIME_FORMAT = 'DD/MM/YY HH:mm';
 
 const BLANK_WAYPOINT = {
-  'base_price': '',
-  'date_from': '',
-  'date_to': '',
+  'basePrice': '',
+  'dateFrom': '',
+  'dateTo': '',
   'destination': '',
   'id': '',
-  'is_favorite': false,
+  'isFavorite': false,
   'offers': [],
   'type': ''
 };
