@@ -6,24 +6,32 @@ import EventsListView from '../view/events-list-view';
 import { render, RenderPosition } from '../render';
 import TripInfoView from '../view/trip-info-view';
 export default class ListPresenter{
-  eventsListComponent = new EventsListView();
+  #headerContainer = null;
+  #filtersContainer = null;
+  #eventsContainer = null;
+  #waypointsListModel = null;
+
+  #eventsListComponent = new EventsListView();
+
+  #waypoints = null;
+
   constructor({headerContainer, filtersContainer,eventsContainer, waypointsListModel }){
-    this.headerContainer = headerContainer;
-    this.filtersContainer = filtersContainer;
-    this.eventsContainer = eventsContainer;
-    this.waypointsListModel = waypointsListModel;
+    this.#headerContainer = headerContainer;
+    this.#filtersContainer = filtersContainer;
+    this.#eventsContainer = eventsContainer;
+    this.#waypointsListModel = waypointsListModel;
   }
 
   init(){
-    this.waypoints = [...this.waypointsListModel.getWaypoints()];
-    render(new TripInfoView(), this.headerContainer, RenderPosition.AFTERBEGIN);
-    render(new FiltersView(), this.filtersContainer);
-    render(new SortingView(), this.eventsContainer);
-    render(new EventFormView({waypoint:this.waypoints[0]}), this.eventsListComponent.getElement(), RenderPosition.AFTERBEGIN);
-    for(let i = 1; i < this.waypoints.length; i++){
-      render(new WaypointView({waypoint:this.waypoints[i]}), this.eventsListComponent.getElement());
+    this.#waypoints = [...this.#waypointsListModel.waypoints];
+    render(new TripInfoView(), this.#headerContainer, RenderPosition.AFTERBEGIN);
+    render(new FiltersView(), this.#filtersContainer);
+    render(new SortingView(), this.#eventsContainer);
+    render(new EventFormView({waypoint:this.#waypoints[0]}), this.#eventsListComponent.element, RenderPosition.AFTERBEGIN);
+    for(let i = 1; i < this.#waypoints.length; i++){
+      render(new WaypointView({waypoint:this.#waypoints[i]}), this.#eventsListComponent.element);
     }
-    render(this.eventsListComponent, this.eventsContainer);
+    render(this.#eventsListComponent, this.#eventsContainer);
   }
 
 }
