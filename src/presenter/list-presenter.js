@@ -1,6 +1,5 @@
 import WaypointView from '../view/waypoint-view';
-import FiltersView from '../view/filters-view';
-import SortingView from '../view/sorting-view';
+import SortView from '../view/sort-view';
 import EventFormView from '../view/event-form-view';
 import EventsListView from '../view/events-list-view';
 import { render, RenderPosition } from '../render';
@@ -8,7 +7,6 @@ import TripInfoView from '../view/trip-info-view';
 import { isEscapeKey } from '../utils';
 export default class ListPresenter{
   #headerContainer = null;
-  #filtersContainer = null;
   #eventsContainer = null;
   #waypointsListModel = null;
 
@@ -16,9 +14,8 @@ export default class ListPresenter{
 
   #waypoints = null;
 
-  constructor({headerContainer, filtersContainer,eventsContainer, waypointsListModel }){
+  constructor({headerContainer, eventsContainer, waypointsListModel }){
     this.#headerContainer = headerContainer;
-    this.#filtersContainer = filtersContainer;
     this.#eventsContainer = eventsContainer;
     this.#waypointsListModel = waypointsListModel;
   }
@@ -26,8 +23,7 @@ export default class ListPresenter{
   init(){
     this.#waypoints = [...this.#waypointsListModel.waypoints];
     render(new TripInfoView(), this.#headerContainer, RenderPosition.AFTERBEGIN);
-    render(new FiltersView(), this.#filtersContainer);
-    render(new SortingView(), this.#eventsContainer);
+    render(new SortView(), this.#eventsContainer);
     for(let i = 0; i < this.#waypoints.length; i++){
       this.#renderWaypoints(this.#waypoints[i]);
     }
