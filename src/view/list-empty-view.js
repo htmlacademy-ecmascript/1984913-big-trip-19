@@ -23,7 +23,7 @@ export default class ListEmptyView {
   #element = null;
   #filterType = null;
 
-  constructor(filterType='everything'){
+  constructor(filterType = 'everything'){
     this.#filterType = filterType;
   }
 
