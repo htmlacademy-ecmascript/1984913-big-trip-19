@@ -31,18 +31,18 @@ const createFormControlsTemplate = (formType)=>{
   const resetButtonText = formType === 'edit' ? 'Delete' : 'Cancel';
   return `<button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
  <button class="event__reset-btn" type="reset">${resetButtonText}</button>
-${formType === 'edit' ? `<button class="event__rollup-btn" type="button">
+ ${formType === 'edit' ? `<button class="event__rollup-btn" type="button">
   <span class="visually-hidden">Open event</span>
 </button>` : ''}
 `;};
 
-const createEventFormTemplate = (waypoint)=>{
+const createEventFormTemplate = (waypoint, formType)=>{
   const {basePrice, dateFrom, dateTo, destination, offers, type } = waypoint;
   const pointType = type !== '' ? type : DEFAULT_POINT_TYPE;
   const typeListTemplate = createFormTypeTemplate(pointType);
   const offersTemplate = createFormOffersTemplate(offers);
   const destinationInfo = getDestination(destination);
-  const controlsTemplate = createFormControlsTemplate('edit');
+  const controlsTemplate = createFormControlsTemplate(formType);
   return(`   <li class="trip-events__item">
 <form class="event event--edit" action="#" method="post">
   <header class="event__header">
@@ -107,24 +107,27 @@ ${controlsTemplate}
 </li>`);};
 
 export default class EventFormView {
-
-  constructor({waypoint = BLANK_WAYPOINT}){
-    this.waypoint = waypoint;
+  #element = null;
+  #waypoint = BLANK_WAYPOINT;
+  #formType = null;
+  constructor({waypoint = BLANK_WAYPOINT, formType}){
+    this.#waypoint = waypoint;
+    this.#formType = formType;
   }
 
-  getTemplate(){
-    return createEventFormTemplate(this.waypoint);
+  get template(){
+    return createEventFormTemplate(this.#waypoint, this.#formType);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }

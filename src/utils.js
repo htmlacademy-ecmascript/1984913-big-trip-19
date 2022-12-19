@@ -40,6 +40,8 @@ const countDuration = (start, end)=> {
 
 const formatDatetime = (datetime, start,end)=> datetime.slice(start, end);
 
+const isEscapeKey = (evt)=>evt.key === 'Escape' || evt.key === 'Esc';
+
 export {
   getRandomArrayItem,
   formatDate,
@@ -47,5 +49,6 @@ export {
   countDuration,
   getDurationInfo,
   formatDatetime,
-  formatEditDatetime
+  formatEditDatetime,
+  isEscapeKey
 };
