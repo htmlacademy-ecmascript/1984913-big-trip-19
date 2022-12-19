@@ -21,7 +21,7 @@ const createListEmptyTemplate = (filterType)=>{
 
 export default class ListEmptyView {
   #element = null;
-  #filterType=null;
+  #filterType = null;
 
   constructor(filterType='everything'){
     this.#filterType = filterType;
