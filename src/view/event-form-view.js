@@ -109,13 +109,30 @@ ${controlsTemplate}
 export default class EventFormView extends AbstractView{
   #waypoint = BLANK_WAYPOINT;
   #formType = null;
-  constructor({waypoint = BLANK_WAYPOINT, formType}){
+  #handleSubmit = null;
+  #handleReset = null;
+  constructor({waypoint = BLANK_WAYPOINT, formType, onSubmit, onReset}){
     super();
     this.#waypoint = waypoint;
     this.#formType = formType;
+    this.#handleSubmit = onSubmit;
+    this.#handleReset = onReset;
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#resetHandler);
+    this.element.querySelector('.event--edit').addEventListener('submit', this.#submitHandler);
+    this.element.querySelector('.event--edit').addEventListener('reset', this.#resetHandler);
   }
 
   get template(){
     return createEventFormTemplate(this.#waypoint, this.#formType);
   }
+
+  #submitHandler = (evt)=>{
+    evt.preventDefault();
+    this.#handleSubmit();
+  };
+
+  #resetHandler = ()=>{
+    this.#handleReset();
+  };
 }

@@ -55,14 +55,23 @@ const createWaypointTemplate = (waypoint)=>{
 
 export default class WaypointView extends AbstractView{
   #waypoint = null;
+  #handleEditClick = null;
 
-  constructor({waypoint}){
+  constructor({waypoint, onEditClick}){
     super();
     this.#waypoint = waypoint;
+    this.#handleEditClick = onEditClick;
+
+    this.element.querySelector('.event__rollup-btn').addEventListener('click',this.#editClickHandler);
   }
 
   get template(){
     return createWaypointTemplate(this.#waypoint);
   }
+
+  #editClickHandler = (evt)=>{
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 
 }
