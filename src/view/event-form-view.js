@@ -1,5 +1,5 @@
 import { BLANK_WAYPOINT, WAYPOINT_TYPES, DEFAULT_POINT_TYPE } from '../consts.js';
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { getDestination, isOfferChecked, mockOffers } from '../mocks/waypoint.js';
 import { formatEditDatetime } from '../utils.js';
 
@@ -106,28 +106,16 @@ ${controlsTemplate}
 </form>
 </li>`);};
 
-export default class EventFormView {
-  #element = null;
+export default class EventFormView extends AbstractView{
   #waypoint = BLANK_WAYPOINT;
   #formType = null;
   constructor({waypoint = BLANK_WAYPOINT, formType}){
+    super();
     this.#waypoint = waypoint;
     this.#formType = formType;
   }
 
   get template(){
     return createEventFormTemplate(this.#waypoint, this.#formType);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

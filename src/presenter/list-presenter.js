@@ -2,7 +2,7 @@ import WaypointView from '../view/waypoint-view';
 import SortView from '../view/sort-view';
 import EventFormView from '../view/event-form-view';
 import EventsListView from '../view/events-list-view';
-import { render, RenderPosition } from '../render';
+import { render, RenderPosition } from '../framework/render';
 import TripInfoView from '../view/trip-info-view';
 import { isEscapeKey } from '../utils';
 import ListEmptyView from '../view/list-empty-view';
