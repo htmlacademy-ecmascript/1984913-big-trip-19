@@ -2,7 +2,7 @@ import WaypointView from '../view/waypoint-view';
 import SortView from '../view/sort-view';
 import EventFormView from '../view/event-form-view';
 import EventsListView from '../view/events-list-view';
-import { render, RenderPosition } from '../framework/render';
+import { render, RenderPosition, replace } from '../framework/render';
 import TripInfoView from '../view/trip-info-view';
 import { isEscapeKey } from '../utils';
 import ListEmptyView from '../view/list-empty-view';
@@ -63,12 +63,12 @@ export default class ListPresenter{
 
     function replaceComponent (componentType) {
       const replacingComponent = componentType === 'waypoint'
-        ? eventFormComponent.element
-        : waypointComponent.element;
+        ? eventFormComponent
+        : waypointComponent;
       const replaceableComponent = componentType === 'waypoint'
-        ? waypointComponent.element
-        : eventFormComponent.element;
-      this.#eventsListComponent.element.replaceChild(replacingComponent,replaceableComponent);
+        ? waypointComponent
+        : eventFormComponent;
+      replace(replacingComponent,replaceableComponent);
     }
 
     function handleEscKeyDown (evt) {
