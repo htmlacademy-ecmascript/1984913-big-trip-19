@@ -4,7 +4,7 @@ import EventFormView from '../view/event-form-view';
 import EventsListView from '../view/events-list-view';
 import { render, RenderPosition, remove, replace } from '../framework/render';
 import TripInfoView from '../view/trip-info-view';
-import { isEscapeKey } from '../utils';
+import { isEscapeKey } from '../utils/common.js';
 import ListEmptyView from '../view/list-empty-view';
 import AddWaypoinButtonView from '../view/add-waypoint-button-view';
 export default class ListPresenter{

@@ -1,7 +1,7 @@
 import { BLANK_WAYPOINT, WAYPOINT_TYPES, DEFAULT_POINT_TYPE } from '../consts.js';
 import AbstractView from '../framework/view/abstract-view.js';
 import { getDestination, isOfferChecked, mockOffers } from '../mocks/waypoint.js';
-import { formatEditDatetime } from '../utils.js';
+import { formatEditDatetime } from '../utils/format-dates.js';
 
 
 const createFormTypeTemplate = (pointType)=>

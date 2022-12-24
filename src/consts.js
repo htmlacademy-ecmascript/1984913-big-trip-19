@@ -6,6 +6,12 @@ const FormatPattern = {
   TIME:'HH:mm',
   DATETIME:'DD/MM/YY HH:mm',
 };
+const FilterType = {
+  EVERYTHING:'everything',
+  FUTURE:'future',
+  PRESENT:'present',
+  PAST:'past',
+};
 
 const BLANK_WAYPOINT = {
   'basePrice': '',
@@ -19,4 +25,4 @@ const BLANK_WAYPOINT = {
 };
 
 
-export {WAYPOINTS_AMOUNT, WAYPOINT_TYPES, BLANK_WAYPOINT,DEFAULT_POINT_TYPE, FormatPattern};
+export {WAYPOINTS_AMOUNT, WAYPOINT_TYPES, BLANK_WAYPOINT,DEFAULT_POINT_TYPE, FormatPattern, FilterType};
