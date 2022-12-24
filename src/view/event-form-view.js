@@ -117,8 +117,10 @@ export default class EventFormView extends AbstractView{
     this.#formType = formType;
     this.#handleSubmit = onSubmit;
     this.#handleReset = onReset;
+    if(formType === 'edit'){
+      this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#resetHandler);
 
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#resetHandler);
+    }
     this.element.querySelector('.event--edit').addEventListener('submit', this.#submitHandler);
     this.element.querySelector('.event--edit').addEventListener('reset', this.#resetHandler);
   }
