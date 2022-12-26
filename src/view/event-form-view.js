@@ -117,7 +117,7 @@ export default class EventFormView extends AbstractView{
   #formType = null;
   #handleSubmit = null;
   #handleReset = null;
-  constructor({waypoint = BLANK_WAYPOINT, waypointIndex, formType, onSubmit, onReset}){
+  constructor({waypoint = BLANK_WAYPOINT, waypointIndex = 0, formType, onSubmit, onReset}){
     super();
     this.#waypoint = waypoint;
     this.#waypointIndex = waypointIndex;
