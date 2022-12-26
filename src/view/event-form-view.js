@@ -4,28 +4,33 @@ import { getDestination, isOfferChecked, mockOffers } from '../mocks/waypoint.js
 import { formatEditDatetime } from '../utils/format-dates.js';
 
 
-const createFormTypeTemplate = (pointType)=>
+const createFormTypeTemplate = (pointType, waypointIndex)=>
   WAYPOINT_TYPES.map((type)=>
     `
          <div class="event__type-item">
-            <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${pointType === type ? 'checked' : ''}>
-            <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
+            <input id="event-type-${type}-${waypointIndex}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${pointType === type ? 'checked' : ''}>
+            <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-${waypointIndex}">${type}</label>
           </div>
     `
   ).join('');
 
-const createFormOffersTemplate = (pointOffers)=>mockOffers.map((offer)=> (
-  `
+const createFormOffersTemplate = (pointOffers, waypointIndex)=>{
+  const getOfferName = (title)=>{
+    const titleParts = title.split(' ');
+    return titleParts[titleParts.length - 1];
+  };
+  return mockOffers.map((offer)=> (
+    `
   <div class="event__offer-selector">
-  <input class="event__offer-checkbox  visually-hidden" id="event-offer-luggage-1" type="checkbox" name="event-offer-luggage" ${isOfferChecked(pointOffers, offer) ? 'checked' : ''}>
-  <label class="event__offer-label" for="event-offer-luggage-1" >
+  <input class="event__offer-checkbox  visually-hidden" id="event-offer-${getOfferName(offer.title)}-${waypointIndex}" type="checkbox" name="event-offer-luggage" ${isOfferChecked(pointOffers, offer) ? 'checked' : ''}>
+  <label class="event__offer-label" for="event-offer-${getOfferName(offer.title)}-${waypointIndex}" >
     <span class="event__offer-title">${offer.title}</span>
     &plus;&euro;&nbsp;
     <span class="event__offer-price">${offer.price}</span>
   </label>
 </div>
     `)
-).join('');
+  ).join('');};
 
 const createFormControlsTemplate = (formType)=>{
   const resetButtonText = formType === 'edit' ? 'Delete' : 'Cancel';
@@ -36,11 +41,11 @@ const createFormControlsTemplate = (formType)=>{
 </button>` : ''}
 `;};
 
-const createEventFormTemplate = (waypoint, formType)=>{
+const createEventFormTemplate = (waypoint, waypointIndex, formType)=>{
   const {basePrice, dateFrom, dateTo, destination, offers, type } = waypoint;
   const pointType = type !== '' ? type : DEFAULT_POINT_TYPE;
-  const typeListTemplate = createFormTypeTemplate(pointType);
-  const offersTemplate = createFormOffersTemplate(offers);
+  const typeListTemplate = createFormTypeTemplate(pointType,waypointIndex);
+  const offersTemplate = createFormOffersTemplate(offers,waypointIndex);
   const destinationInfo = getDestination(destination);
   const controlsTemplate = createFormControlsTemplate(formType);
   return(`   <li class="trip-events__item">
@@ -108,12 +113,14 @@ ${controlsTemplate}
 
 export default class EventFormView extends AbstractView{
   #waypoint = BLANK_WAYPOINT;
+  #waypointIndex = null;
   #formType = null;
   #handleSubmit = null;
   #handleReset = null;
-  constructor({waypoint = BLANK_WAYPOINT, formType, onSubmit, onReset}){
+  constructor({waypoint = BLANK_WAYPOINT, waypointIndex, formType, onSubmit, onReset}){
     super();
     this.#waypoint = waypoint;
+    this.#waypointIndex = waypointIndex;
     this.#formType = formType;
     this.#handleSubmit = onSubmit;
     this.#handleReset = onReset;
@@ -126,7 +133,7 @@ export default class EventFormView extends AbstractView{
   }
 
   get template(){
-    return createEventFormTemplate(this.#waypoint, this.#formType);
+    return createEventFormTemplate(this.#waypoint, this.#waypointIndex, this.#formType);
   }
 
   #submitHandler = (evt)=>{

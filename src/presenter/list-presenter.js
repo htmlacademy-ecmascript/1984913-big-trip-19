@@ -30,7 +30,7 @@ export default class ListPresenter{
     if(this.#waypoints.length > 0){
       render(new TripInfoView(), this.#headerContainer, RenderPosition.AFTERBEGIN);
       for(let i = 0; i < this.#waypoints.length; i++){
-        this.#renderWaypoints(this.#waypoints[i]);
+        this.#renderWaypoints(this.#waypoints[i], i);
       }
     } else{
       render(new ListEmptyView(this.filterType), this.#eventsContainer);
@@ -39,12 +39,6 @@ export default class ListPresenter{
   }
 
   #renderAddFormButton (){
-    const addWaypointButton = new AddWaypoinButtonView({onAddClick: ()=> this.#renderAddForm()});
-    render(addWaypointButton, this.#headerContainer, RenderPosition.BEFOREEND);
-
-  }
-
-  #renderAddForm(){
     const formType = 'add';
     const eventFormComponent = new EventFormView({
       formType,
@@ -67,12 +61,19 @@ export default class ListPresenter{
         document.removeEventListener('keydown', handleEscKeyDown);
       }
     }
+    const addWaypointButton = new AddWaypoinButtonView({onAddClick: ()=>{
+      this.#renderAddForm(eventFormComponent);
+      document.addEventListener('keydown', handleEscKeyDown);
+    }});
+    render(addWaypointButton, this.#headerContainer, RenderPosition.BEFOREEND);
+  }
+
+  #renderAddForm(eventFormComponent){
     render (eventFormComponent, this.#eventsListComponent.element, RenderPosition.AFTERBEGIN);
   }
 
-  #renderWaypoints(waypoint){
+  #renderWaypoints(waypoint, waypointIndex){
     const formType = 'edit';
-
 
     const waypointComponent = new WaypointView({
       waypoint,
@@ -84,6 +85,7 @@ export default class ListPresenter{
 
     const eventFormComponent = new EventFormView({
       waypoint,
+      waypointIndex,
       formType,
       onSubmit:()=>{
         replaceComponent.call(this, 'form');
