@@ -8,7 +8,7 @@ const eventsContainer = document.querySelector('.trip-events');
 const waypointsListModel = new WaypointsListModel();
 
 const listPresenter = new ListPresenter( {headerContainer, eventsContainer, waypointsListModel });
-const filtersPresenter = new FiltersPresenter( {filtersContainer });
+const filtersPresenter = new FiltersPresenter( {filtersContainer, waypointsListModel });
 
 filtersPresenter.init();
 listPresenter.init();

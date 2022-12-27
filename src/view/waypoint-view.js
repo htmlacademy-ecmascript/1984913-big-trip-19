@@ -1,5 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { formatDate, formatTime, countDuration, getDurationInfo, formatDatetime } from '../utils.js';
+import { countDuration, getDurationInfo} from '../utils/common.js';
+import { formatDate, formatTime, formatDatetimeEvent } from '../utils/format-dates.js';
 import { getDestination,getOffer } from '../mocks/waypoint.js';
 
 const createWaypointTemplate = (waypoint)=>{
@@ -13,16 +14,16 @@ const createWaypointTemplate = (waypoint)=>{
 
   return(` <li class="trip-events__item">
 <div class="event">
-  <time class="event__date" datetime=${formatDatetime(dateFrom, 0,10)}>${date}</time>
+  <time class="event__date" datetime=${formatDatetimeEvent(dateFrom,0,10)}>${date}</time>
   <div class="event__type">
     <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
   </div>
   <h3 class="event__title">${type} ${destinationInfo.name}</h3>
   <div class="event__schedule">
     <p class="event__time">
-      <time class="event__start-time" datetime=${formatDatetime(dateFrom, 0,16)}>${startTime}</time>
+      <time class="event__start-time" datetime=${formatDatetimeEvent(dateFrom,0,16)}>${startTime}</time>
       &mdash;
-      <time class="event__end-time" datetime=${formatDatetime(dateTo,0, 16)}>${endTime}</time>
+      <time class="event__end-time" datetime=${formatDatetimeEvent(dateTo,0,16)}>${endTime}</time>
     </p>
     <p class="event__duration">${duration}</p>
   </div>

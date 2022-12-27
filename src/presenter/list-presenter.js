@@ -2,10 +2,11 @@ import WaypointView from '../view/waypoint-view';
 import SortView from '../view/sort-view';
 import EventFormView from '../view/event-form-view';
 import EventsListView from '../view/events-list-view';
-import { render, RenderPosition, replace } from '../framework/render';
+import { render, RenderPosition, remove, replace } from '../framework/render';
 import TripInfoView from '../view/trip-info-view';
-import { isEscapeKey } from '../utils';
+import { isEscapeKey } from '../utils/common.js';
 import ListEmptyView from '../view/list-empty-view';
+import AddWaypoinButtonView from '../view/add-waypoint-button-view';
 export default class ListPresenter{
   #headerContainer = null;
   #eventsContainer = null;
@@ -25,10 +26,11 @@ export default class ListPresenter{
   init(){
     this.#waypoints = [...this.#waypointsListModel.waypoints];
     render(new SortView(), this.#eventsContainer);
+    this.#renderAddFormButton();
     if(this.#waypoints.length > 0){
       render(new TripInfoView(), this.#headerContainer, RenderPosition.AFTERBEGIN);
       for(let i = 0; i < this.#waypoints.length; i++){
-        this.#renderWaypoints(this.#waypoints[i]);
+        this.#renderWaypoints(this.#waypoints[i], i);
       }
     } else{
       render(new ListEmptyView(this.filterType), this.#eventsContainer);
@@ -36,9 +38,42 @@ export default class ListPresenter{
     render(this.#eventsListComponent, this.#eventsContainer);
   }
 
-  #renderWaypoints(waypoint){
-    const formType = 'edit';
+  #renderAddFormButton (){
+    const formType = 'add';
+    const eventFormComponent = new EventFormView({
+      formType,
+      onSubmit:()=>{
+        removeAddForm.call(this);
+        document.removeEventListener('keydown', handleEscKeyDown);
+      },
+      onReset:()=>{
+        removeAddForm.call(this);
+        document.removeEventListener('keydown', handleEscKeyDown);
+      },
+    });
+    function removeAddForm (){
+      remove(eventFormComponent);
+    }
+    function handleEscKeyDown (evt) {
+      if (isEscapeKey(evt)) {
+        evt.preventDefault();
+        removeAddForm.call(this);
+        document.removeEventListener('keydown', handleEscKeyDown);
+      }
+    }
+    const addWaypointButton = new AddWaypoinButtonView({onAddClick: ()=>{
+      this.#renderAddForm(eventFormComponent);
+      document.addEventListener('keydown', handleEscKeyDown);
+    }});
+    render(addWaypointButton, this.#headerContainer, RenderPosition.BEFOREEND);
+  }
 
+  #renderAddForm(eventFormComponent){
+    render (eventFormComponent, this.#eventsListComponent.element, RenderPosition.AFTERBEGIN);
+  }
+
+  #renderWaypoints(waypoint, waypointIndex){
+    const formType = 'edit';
 
     const waypointComponent = new WaypointView({
       waypoint,
@@ -50,6 +85,7 @@ export default class ListPresenter{
 
     const eventFormComponent = new EventFormView({
       waypoint,
+      waypointIndex,
       formType,
       onSubmit:()=>{
         replaceComponent.call(this, 'form');

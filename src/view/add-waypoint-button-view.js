@@ -5,7 +5,20 @@ const createAddWaypoinButtonTemplate = ()=>`
 `;
 
 export default class AddWaypoinButtonView extends AbstractView {
+  #handleClick = null;
+
+  constructor({onAddClick}){
+    super();
+    this.#handleClick = onAddClick;
+    this.element.addEventListener('click', this.#clickHandler);
+  }
+
   get template(){
     return createAddWaypoinButtonTemplate();
   }
+
+  #clickHandler = (evt)=>{
+    evt.preventDefault();
+    this.#handleClick();
+  };
 }

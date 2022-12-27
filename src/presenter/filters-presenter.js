@@ -1,15 +1,18 @@
-import FiltersView from '../view/filters-view';
+import FiltersFormView from '../view/filters-form-view';
 import { render } from '../framework/render';
+import { createFilter } from '../mocks/filter';
 
 export default class FiltersPresenter{
   #filtersContainer = null;
-
-  constructor({filtersContainer }){
+  #waypoints = null;
+  constructor({filtersContainer, waypointsListModel }){
     this.#filtersContainer = filtersContainer;
+    this.#waypoints = waypointsListModel.waypoints;
   }
 
   init(){
-    render(new FiltersView(), this.#filtersContainer);
+    const filters = createFilter(this.#waypoints);
+    render(new FiltersFormView({filters}), this.#filtersContainer);
   }
 }
 

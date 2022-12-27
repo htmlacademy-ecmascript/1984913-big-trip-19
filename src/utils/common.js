@@ -1,13 +1,6 @@
 import dayjs from 'dayjs';
-import { FormatPattern } from './consts';
 
 const getRandomArrayItem = (items)=> items[Math.floor(Math.random() * items.length)];
-
-const formatDate = (date)=> date ? dayjs(date).format(FormatPattern.DATE) : '';
-
-const formatTime = (time)=> time ? dayjs(time).format(FormatPattern.TIME) : '';
-
-const formatEditDatetime = (datetime)=> datetime ? dayjs(datetime).format(FormatPattern.DATETIME) : '';
 
 const getDurationInfo = ({days, hours, minutes}) =>{
   let durationInfo = '';
@@ -38,17 +31,12 @@ const countDuration = (start, end)=> {
     minutes};
 };
 
-const formatDatetime = (datetime, start,end)=> datetime.slice(start, end);
 
 const isEscapeKey = (evt)=>evt.key === 'Escape' || evt.key === 'Esc';
 
 export {
   getRandomArrayItem,
-  formatDate,
-  formatTime,
   countDuration,
   getDurationInfo,
-  formatDatetime,
-  formatEditDatetime,
   isEscapeKey
 };

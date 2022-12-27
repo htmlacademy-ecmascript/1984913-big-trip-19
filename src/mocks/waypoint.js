@@ -1,5 +1,5 @@
 import { WAYPOINT_TYPES } from '../consts';
-import { getRandomArrayItem } from '../utils';
+import { getRandomArrayItem } from '../utils/common';
 
 const mockOffers = [{
   'id': 1,
@@ -68,8 +68,8 @@ const destinations = [
 const mockWaypoints = [
   {
     'basePrice': 1100,
-    'dateFrom': '2019-06-10T11:55:56.845Z',
-    'dateTo': '2019-06-11T15:22:13.375Z',
+    'dateFrom': new Date('2019-06-10T11:55'),
+    'dateTo':  new Date('2019-06-11T15:22'),
     'destination': getRandomArrayItem(destinations).id,
     'id': '0',
     'isFavorite': false,
@@ -78,8 +78,8 @@ const mockWaypoints = [
   },
   {
     'basePrice': 2200,
-    'dateFrom': '2019-07-11T10:10:56.845Z',
-    'dateTo': '2019-07-11T15:07:13.375Z',
+    'dateFrom': new Date('2019-07-11T10:10'),
+    'dateTo': new Date('2019-07-11T15:07'),
     'destination': getRandomArrayItem(destinations).id,
     'id': '1',
     'isFavorite': true,
@@ -88,8 +88,8 @@ const mockWaypoints = [
   },
   {
     'basePrice': 3500,
-    'dateFrom': '2019-08-12T08:35:56.845Z',
-    'dateTo': '2019-08-12T19:45:13.375Z',
+    'dateFrom': new Date('2019-08-12T08:35'),
+    'dateTo': new Date('2019-08-12T19:45'),
     'destination': getRandomArrayItem(destinations).id,
     'id': '2',
     'isFavorite': false,
@@ -98,8 +98,8 @@ const mockWaypoints = [
   },
   {
     'basePrice': 700,
-    'dateFrom': '2019-09-13T11:13:56.845Z',
-    'dateTo': '2019-09-13T13:15:13.375Z',
+    'dateFrom': new Date('2019-09-13T11:13'),
+    'dateTo': new Date('2019-09-13T13:15'),
     'destination': getRandomArrayItem(destinations).id,
     'id': '3',
     'isFavorite': false,
