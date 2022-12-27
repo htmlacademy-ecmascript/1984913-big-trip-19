@@ -38,8 +38,9 @@ export default class ListPresenter{
         this.#renderWaypoint(this.#waypoints[i]);
       }
     } else{
-      this.#renderEmptyList(); }
-    render(this.#eventsListComponent, this.#eventsContainer);
+      this.#renderEmptyList();
+    }
+    this.#renderEventsList();
   }
 
   #renderAddFormButton (){
@@ -77,8 +78,10 @@ export default class ListPresenter{
   }
 
   #renderWaypoint(waypoint){
-    const waypointpPresenter = new WaypointPresenter({eventsContainer:this.#eventsListComponent.element});
-    waypointpPresenter.init(waypoint);
+    const waypointPresenter = new WaypointPresenter({
+      eventsContainer:this.#eventsListComponent.element,
+    });
+    waypointPresenter.init(waypoint);
   }
 
   #renderEmptyList(){
@@ -91,6 +94,10 @@ export default class ListPresenter{
 
   #renderTripInfo(){
     render(this.#tripInfoComponent, this.#headerContainer, RenderPosition.AFTERBEGIN);
+  }
+
+  #renderEventsList(){
+    render(this.#eventsListComponent, this.#eventsContainer);
   }
 }
 
