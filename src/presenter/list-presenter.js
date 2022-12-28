@@ -19,7 +19,8 @@ export default class ListPresenter{
   #emptyListComponent = new ListEmptyView(this.#filterType);
   #tripInfoComponent = new TripInfoView();
 
-  #waypoints = null;
+  #waypoints = [];
+  #waypointPresenter = new Map();
 
   constructor({headerContainer, eventsContainer, waypointsListModel }){
     this.#headerContainer = headerContainer;
@@ -77,12 +78,19 @@ export default class ListPresenter{
     render (eventFormComponent, this.#eventsListComponent.element, RenderPosition.AFTERBEGIN);
   }
 
+  #handleStatusChange = ()=>{
+    this.#waypointPresenter.forEach((presenter)=> presenter.resetView());
+  };
+
   #renderWaypoint(waypoint){
     const waypointPresenter = new WaypointPresenter({
       eventsContainer:this.#eventsListComponent.element,
+      onStatusChange:this.#handleStatusChange
     });
     waypointPresenter.init(waypoint);
+    this.#waypointPresenter.set(waypoint.id, waypointPresenter);
   }
+
 
   #renderEmptyList(){
     render(this.#emptyListComponent, this.#eventsContainer);
@@ -98,6 +106,11 @@ export default class ListPresenter{
 
   #renderEventsList(){
     render(this.#eventsListComponent, this.#eventsContainer);
+  }
+
+  #clearEventsList(){
+    this.#waypointPresenter.forEach((presenter)=> presenter.destroy());
+    this.#waypointPresenter.clear();
   }
 }
 
