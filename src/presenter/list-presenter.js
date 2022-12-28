@@ -3,7 +3,7 @@ import EventFormView from '../view/event-form-view';
 import EventsListView from '../view/events-list-view';
 import { render, RenderPosition, remove } from '../framework/render';
 import TripInfoView from '../view/trip-info-view';
-import { isEscapeKey } from '../utils/common.js';
+import { isEscapeKey, updateItem } from '../utils/common.js';
 import ListEmptyView from '../view/list-empty-view';
 import AddWaypoinButtonView from '../view/add-waypoint-button-view';
 import WaypointPresenter from './waypoint-presenter';
@@ -82,10 +82,16 @@ export default class ListPresenter{
     this.#waypointPresenter.forEach((presenter)=> presenter.resetView());
   };
 
+  #handleDataChange = (updatedWaypoint) => {
+    this.#waypoints = updateItem(this.#waypoints, updatedWaypoint);
+    this.#waypointPresenter.get(updatedWaypoint.id).init(updatedWaypoint);
+  };
+
   #renderWaypoint(waypoint){
     const waypointPresenter = new WaypointPresenter({
       eventsContainer:this.#eventsListComponent.element,
-      onStatusChange:this.#handleStatusChange
+      onStatusChange:this.#handleStatusChange,
+      onDataChange: this.#handleDataChange
     });
     waypointPresenter.init(waypoint);
     this.#waypointPresenter.set(waypoint.id, waypointPresenter);

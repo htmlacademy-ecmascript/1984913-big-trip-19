@@ -7,6 +7,7 @@ import { WaypointStatus } from '../consts';
 export default class WaypointPresenter{
   #eventsContainer = null;
   #handleStatusChange = null;
+  #handleDataChange = null;
 
   #waypointComponent = null;
   #eventFormComponent = null;
@@ -14,9 +15,10 @@ export default class WaypointPresenter{
   #waypoint = null;
   #status = WaypointStatus.DEFAULT;
 
-  constructor({eventsContainer, onStatusChange }){
+  constructor({eventsContainer, onStatusChange, onDataChange }){
     this.#eventsContainer = eventsContainer;
     this.#handleStatusChange = onStatusChange;
+    this.#handleDataChange = onDataChange;
   }
 
   init(waypoint){
@@ -28,9 +30,8 @@ export default class WaypointPresenter{
 
     this.#waypointComponent = new WaypointView({
       waypoint:this.#waypoint,
-      onEditClick: ()=>{
-        this.#handleEditClick();
-      }
+      onEditClick: this.#handleEditClick,
+      onFavoriteClick: this.#handleFavoriteClick,
     });
 
     this.#eventFormComponent = new EventFormView({
@@ -99,6 +100,10 @@ export default class WaypointPresenter{
 
   #handleEditClick = ()=>{
     this.#replaceComponent('waypoint');
+  };
+
+  #handleFavoriteClick = ()=>{
+    this.#handleDataChange({...this.#waypoint, isFavorite:!this.#waypoint.isFavorite});
   };
 
 }
