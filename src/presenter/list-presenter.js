@@ -7,7 +7,7 @@ import { isEscapeKey, updateItem } from '../utils/common.js';
 import ListEmptyView from '../view/list-empty-view';
 import AddWaypoinButtonView from '../view/add-waypoint-button-view';
 import WaypointPresenter from './waypoint-presenter';
-import { SortType } from '../consts';
+import { SortType, WAYPOINTS_AMOUNT } from '../consts';
 import { sortWaypointByPrice, sortWaypontByTime, sortWaypointByDay } from '../utils/waypoint';
 export default class ListPresenter{
   #headerContainer = null;
@@ -38,9 +38,6 @@ export default class ListPresenter{
     this.#renderSort();
     if(this.#waypoints.length > 0){
       this.#renderTripInfo();
-      for(let i = 0; i < this.#waypoints.length; i++){
-        this.#renderWaypoint(this.#waypoints[i]);
-      }
     } else{
       this.#renderEmptyList();
     }
@@ -100,6 +97,10 @@ export default class ListPresenter{
     this.#waypointPresenter.set(waypoint.id, waypointPresenter);
   }
 
+  #renderWaypoints(from, to){
+    this.#waypoints.slice(from, to).forEach((waypoint)=>this.#renderWaypoint(waypoint));
+  }
+
 
   #renderEmptyList(){
     render(this.#emptyListComponent, this.#eventsContainer);
@@ -141,6 +142,7 @@ export default class ListPresenter{
 
   #renderEventsList(){
     render(this.#eventsListComponent, this.#eventsContainer);
+    this.#renderWaypoints(0, WAYPOINTS_AMOUNT);
   }
 
   #clearEventsList(){
