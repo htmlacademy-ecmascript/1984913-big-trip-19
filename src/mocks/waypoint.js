@@ -1,3 +1,4 @@
+import { nanoid } from 'nanoid';
 import { WAYPOINT_TYPES } from '../consts';
 import { getRandomArrayItem } from '../utils/common';
 
@@ -71,7 +72,6 @@ const mockWaypoints = [
     'dateFrom': new Date('2019-06-10T11:55'),
     'dateTo':  new Date('2019-06-11T15:22'),
     'destination': getRandomArrayItem(destinations).id,
-    'id': '0',
     'isFavorite': false,
     'offers': [getRandomArrayItem(mockOffers).id, getRandomArrayItem(mockOffers).id],
     'type': getRandomArrayItem(WAYPOINT_TYPES)
@@ -81,7 +81,6 @@ const mockWaypoints = [
     'dateFrom': new Date('2019-07-11T10:10'),
     'dateTo': new Date('2019-07-11T15:07'),
     'destination': getRandomArrayItem(destinations).id,
-    'id': '1',
     'isFavorite': true,
     'offers':  [getRandomArrayItem(mockOffers).id],
     'type': getRandomArrayItem(WAYPOINT_TYPES)
@@ -91,7 +90,6 @@ const mockWaypoints = [
     'dateFrom': new Date('2019-08-12T08:35'),
     'dateTo': new Date('2019-08-12T19:45'),
     'destination': getRandomArrayItem(destinations).id,
-    'id': '2',
     'isFavorite': false,
     'offers': [ getRandomArrayItem(mockOffers).id],
     'type': getRandomArrayItem(WAYPOINT_TYPES)
@@ -101,14 +99,13 @@ const mockWaypoints = [
     'dateFrom': new Date('2019-09-13T11:13'),
     'dateTo': new Date('2019-09-13T13:15'),
     'destination': getRandomArrayItem(destinations).id,
-    'id': '3',
     'isFavorite': false,
     'offers':  [getRandomArrayItem(mockOffers).id],
     'type': getRandomArrayItem(WAYPOINT_TYPES)
   }
 ];
 
-const getRandomWaypoint = ()=> getRandomArrayItem(mockWaypoints);
+const getRandomWaypoint = ()=>({id:nanoid(), ...getRandomArrayItem(mockWaypoints)});
 
 const getDestination = (id)=> destinations.find((destination)=>destination.id === id);
 
