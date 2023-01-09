@@ -105,7 +105,7 @@ const mockWaypoints = [
   }
 ];
 
-const getRandomWaypoint = ()=> ({id:nanoid(), ...getRandomArrayItem(mockWaypoints)});
+const getRandomWaypoint = ()=>({id:nanoid(), ...getRandomArrayItem(mockWaypoints)});
 
 const getDestination = (id)=> destinations.find((destination)=>destination.id === id);
 
