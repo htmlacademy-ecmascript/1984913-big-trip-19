@@ -1,19 +1,20 @@
+import { EmptyListMessage } from '../consts.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
 const createListEmptyTemplate = (filterType)=>{
   let messageText = '';
   switch (filterType){
     case 'past':
-      messageText = 'There are no past events now';
+      messageText = EmptyListMessage.PAST;
       break;
     case 'present':
-      messageText = 'There are no present events now';
+      messageText = EmptyListMessage.PRESENT;
       break;
     case 'future':
-      messageText = 'There are no future events now';
+      messageText = EmptyListMessage.FUTURE;
       break;
     default:
-      messageText = 'Click New Event to create your first point';
+      messageText = EmptyListMessage.EVERYTHING;
       break;
   }
 
