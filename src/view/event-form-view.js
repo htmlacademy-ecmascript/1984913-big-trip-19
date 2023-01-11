@@ -35,7 +35,7 @@ const createFormOffersTemplate = (offers, pointOffers, id)=>{
 
 const createFormOffersListTemplate = (pointType, pointOffers, id)=>{
   const offersByType = getOffersByType(pointType);
-  if(!offersByType || !offersByType.offers){
+  if(!offersByType || !offersByType.offers || offersByType.offers.length === 0){
     return '';
   }
 
@@ -46,6 +46,16 @@ const createFormOffersListTemplate = (pointType, pointOffers, id)=>{
       </div>
     </section>`;
 
+};
+
+const createFormPhotosGallery = (pictures) =>{
+  if(!pictures || pictures.length === 0){
+    return '';
+  }
+  return`<div class="event__photos-container">
+    <div class="event__photos-tape">
+      ${pictures.map((picture)=> `<img class="event__photo" src=${picture.src} alt=${picture.alt}>`)}
+  </div>`;
 };
 
 const createFormControlsTemplate = (formType)=>{
@@ -68,11 +78,11 @@ const createEventFormTemplate = (waypoint, formType)=>{
 <form class="event event--edit" action="#" method="post">
   <header class="event__header">
   <div class="event__type-wrapper">
-  <label class="event__type  event__type-btn" for="event-type-toggle-1">
+  <label class="event__type  event__type-btn" for="event-type-toggle-${id}">
   <span class="visually-hidden">Choose event type</span>
   <img class="event__type-icon" width="17" height="17" src="img/icons/${pointType}.png" alt="Event type icon">
 </label>
-<input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+<input class="event__type-toggle  visually-hidden" id="event-type-toggle-${id}" type="checkbox">
 <div class="event__type-list">
   <fieldset class="event__type-group">
     <legend class="visually-hidden">Event type</legend>
@@ -90,6 +100,7 @@ ${typeListTemplate}
         <option value="Amsterdam"></option>
         <option value="Geneva"></option>
         <option value="Chamonix"></option>
+        <option value="Mont Blanc"></option>
       </datalist>
     </div>
 
@@ -116,31 +127,43 @@ ${controlsTemplate}
    ${destinationInfo ? `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
       <p class="event__destination-description">${destinationInfo.description}</p>
+      ${createFormPhotosGallery(destinationInfo.pictures)}
     </section>
   </section>` : ''}
 </form>
 </li>`);};
 
 export default class EventFormView extends AbstractStatefulView{
+  #destinations = null;
   #formType = null;
   #handleSubmit = null;
   #handleReset = null;
-  constructor({waypoint = BLANK_WAYPOINT, formType, onSubmit, onReset, }){
+  constructor({waypoint = BLANK_WAYPOINT, formType, onSubmit, onReset, destinations }){
     super();
     this._setState(EventFormView.parseWaypointToState(waypoint));
     this.#formType = formType;
     this.#handleSubmit = onSubmit;
     this.#handleReset = onReset;
-    if(formType === 'edit'){
-      this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#resetHandler);
-
-    }
-    this.element.querySelector('.event--edit').addEventListener('submit', this.#submitHandler);
-    this.element.querySelector('.event--edit').addEventListener('reset', this.#resetHandler);
+    this.#destinations = destinations;
+    this._restoreHandlers();
   }
 
   get template(){
     return createEventFormTemplate(this._state, this.#formType);
+  }
+
+
+  _restoreHandlers(){
+    if(this.#formType === 'edit'){
+      this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#resetHandler);
+
+    }
+
+    this.element.querySelector('.event--edit').addEventListener('submit', this.#submitHandler);
+    this.element.querySelector('.event--edit').addEventListener('reset', this.#resetHandler);
+
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
   }
 
   #submitHandler = (evt)=>{
@@ -152,10 +175,32 @@ export default class EventFormView extends AbstractStatefulView{
     this.#handleReset();
   };
 
+  #typeChangeHandler = (evt)=>{
+    evt.preventDefault();
+    if (evt.target.tagName === 'INPUT') {
+      this.updateElement({
+        type: evt.target.value,
+      });
+    }
+  };
+
+  #destinationChangeHandler = (evt)=>{
+    evt.preventDefault();
+    if (evt.target.value === '') {
+      this.updateElement({
+        destination: ''
+      });
+    }
+
+    const chosenDestination = this.#destinations.find((item)=>item.name === evt.target.value);
+    this.updateElement({
+      destination: chosenDestination.id
+    });
+  };
+
   static parseWaypointToState(waypoint){
     return {
       ...waypoint,
-      chosenDestination:waypoint.destination
     };
   }
 

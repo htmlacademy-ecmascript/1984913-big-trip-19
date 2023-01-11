@@ -13,6 +13,7 @@ export default class WaypointPresenter{
   #eventFormComponent = null;
 
   #waypoint = null;
+  #destinations = null;
   #status = WaypointStatus.DEFAULT;
 
   constructor({eventsContainer, onStatusChange, onDataChange }){
@@ -21,8 +22,9 @@ export default class WaypointPresenter{
     this.#handleDataChange = onDataChange;
   }
 
-  init(waypoint){
+  init(waypoint, destinations){
     this.#waypoint = waypoint;
+    this.#destinations = destinations;
 
     const formType = 'edit';
     const prevWaypointComponent = this.#waypointComponent;
@@ -36,6 +38,7 @@ export default class WaypointPresenter{
 
     this.#eventFormComponent = new EventFormView({
       waypoint:this.#waypoint,
+      destinations:this.#destinations,
       formType,
       onSubmit:()=>{
         this.#replaceComponent('form');

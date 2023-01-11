@@ -39,19 +39,19 @@ const mockOffers = [
   },
   {
     type: 'bus',
-    offers: null
+    offers: []
   },
   {
     type: 'train',
-    offers: null
+    offers: []
   },
   {
     type: 'ship',
-    offers: null
+    offers: []
   },
   {
     type: 'drive',
-    offers: null
+    offers: []
   }
 ];
 
@@ -63,7 +63,7 @@ const destinations = [
     'name': 'Chamonix',
     'pictures': [
       {
-        'src': 'http://picsum.photos/300/200?r=0.0762563005163317',
+        'src': `http://picsum.photos/300/200?r=${Math.random()}`,
         'description': 'Chamonix parliament building'
       }
     ]
@@ -74,9 +74,13 @@ const destinations = [
     'name': 'Amsterdam',
     'pictures': [
       {
-        'src': 'https://loremflickr.com/248/152?random=125',
+        'src': `http://picsum.photos/300/200?r=${Math.random()}`,
         'description': 'Amsterdam '
-      }
+      },
+      {
+        'src': `http://picsum.photos/300/200?r=${Math.random()}`,
+        'description': 'Amsterdam '
+      },
     ]
   },
   {
@@ -85,7 +89,7 @@ const destinations = [
     'name': 'Geneva',
     'pictures': [
       {
-        'src': 'https://loremflickr.com/248/152?random=320',
+        'src': `http://picsum.photos/300/200?r=${Math.random()}`,
         'description': 'Geneva'
       }
     ]
@@ -94,12 +98,7 @@ const destinations = [
     'id': 4,
     'description': 'Mont Blanc, is a beautiful city. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.',
     'name': 'Mont Blanc',
-    'pictures': [
-      {
-        'src': 'https://loremflickr.com/248/152?random=740',
-        'description': 'Mont Blanc'
-      }
-    ]
+    'pictures': []
   }];
 
 const mockWaypoints = [
@@ -127,7 +126,7 @@ const mockWaypoints = [
     'dateTo': new Date('2019-08-12T19:45'),
     'destination': getRandomArrayItem(destinations).id,
     'isFavorite': false,
-    'offers': [ ],
+    'offers': [],
     'type': 'bus'
   },
   {
@@ -152,10 +151,10 @@ const getCheckedOffers = (type, offers) => {
 
   const checkedOffers = offersByType.offers?.filter((offer) =>
     offers
-      .some((offerId) => offerId === offer.id)) || null;
+      .some((offerId) => offerId === offer.id));
   return checkedOffers;
 };
 
 const isOfferChecked = (pointOffers, offer)=> !!pointOffers.find((item)=> offer.id === item);
 
-export {getRandomWaypoint, getDestination, getOffersByType, getCheckedOffers, mockOffers, isOfferChecked};
+export {getRandomWaypoint, getDestination, getOffersByType, getCheckedOffers, mockOffers, isOfferChecked, destinations};
