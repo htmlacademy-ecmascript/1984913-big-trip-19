@@ -1,7 +1,14 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { countDuration, getDurationInfo} from '../utils/common.js';
 import { formatDate, formatTime, formatDatetimeEvent } from '../utils/format-dates.js';
-import { getDestination,getOffer } from '../mocks/waypoint.js';
+import { getDestination,getCheckedOffers } from '../mocks/waypoint.js';
+
+const createOffersTemplate = (offers)=> offers.map((offer)=> `<li class="event__offer">
+<span class="event__offer-title">${offer.title}</span>
+&plus;&euro;&nbsp;
+<span class="event__offer-price">${offer.price}</span>
+</li>`).join('');
+
 
 const createWaypointTemplate = (waypoint)=>{
   const {basePrice, dateFrom, dateTo, destination, isFavorite, offers, type } = waypoint;
@@ -11,6 +18,7 @@ const createWaypointTemplate = (waypoint)=>{
   const duration = getDurationInfo(countDuration(dateFrom,dateTo));
   const favoriteClassName = isFavorite ? 'event__favorite-btn--active' : '';
   const destinationInfo = getDestination(destination);
+  const checkedOffers = getCheckedOffers(type, offers);
   return(` <li class="trip-events__item">
 <div class="event">
   <time class="event__date" datetime=${formatDatetimeEvent(dateFrom,0,10)}>${date}</time>
@@ -29,17 +37,12 @@ const createWaypointTemplate = (waypoint)=>{
   <p class="event__price">
     &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
   </p>
-  <h4 class="visually-hidden">Offers:</h4>
-  <ul class="event__selected-offers">
- ${offers.map((offer)=>{
-      const offerInfo = getOffer(offer);
-      return(`<li class="event__offer">
-      <span class="event__offer-title">${offerInfo.title}</span>
-      &plus;&euro;&nbsp;
-      <span class="event__offer-price">${offerInfo.price}</span>
-    </li>`);}).join('')
+  ${checkedOffers ?
+      `<h4 class="visually-hidden">Offers:</h4>
+   <ul class="event__selected-offers">
+  ${createOffersTemplate(checkedOffers)}
+    </ul>` : ''
     }
-  </ul>
   <button class="event__favorite-btn ${favoriteClassName}" type="button">
     <span class="visually-hidden">Add to favorite</span>
     <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">

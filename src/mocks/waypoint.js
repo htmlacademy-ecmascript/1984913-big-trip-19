@@ -1,24 +1,60 @@
 import { nanoid } from 'nanoid';
-import { WAYPOINT_TYPES } from '../consts';
 import { getRandomArrayItem } from '../utils/common';
 
-const mockOffers = [{
-  'id': 1,
-  'title': 'Upgrade to a business class',
-  'price': 120
-}, {
-  'id': 2,
-  'title': 'Order Uber',
-  'price': 20
-}, {
-  'id': 3,
-  'title': 'Rent a car',
-  'price': 300
-}, {
-  'id': 4,
-  'title': 'Add luggage',
-  'price': 70
-}];
+const mockOffers = [
+  {
+    type: 'taxi',
+    offers: [
+      {
+        id: 1,
+        title: 'Rent a limo',
+        price: 120
+      },
+      {
+        id: 2,
+        title: 'Order Uber',
+        price: 20
+      },
+      {
+        id: 3,
+        title: 'Add luggage',
+        price: 40
+      }
+    ]
+  },
+  {
+    type: 'flight',
+    offers: [
+      {
+        id: 1,
+        'title': 'Upgrade to a business class',
+        'price': 120
+      },
+      {
+        id: 2,
+        title: 'Add meal',
+        price: 10
+      }
+    ]
+  },
+  {
+    type: 'bus',
+    offers: null
+  },
+  {
+    type: 'train',
+    offers: null
+  },
+  {
+    type: 'ship',
+    offers: null
+  },
+  {
+    type: 'drive',
+    offers: null
+  }
+];
+
 
 const destinations = [
   {
@@ -73,8 +109,8 @@ const mockWaypoints = [
     'dateTo':  new Date('2019-06-11T15:22'),
     'destination': getRandomArrayItem(destinations).id,
     'isFavorite': false,
-    'offers': [getRandomArrayItem(mockOffers).id, getRandomArrayItem(mockOffers).id],
-    'type': getRandomArrayItem(WAYPOINT_TYPES)
+    'offers': [1,2],
+    'type': 'taxi'
   },
   {
     'basePrice': 2200,
@@ -82,8 +118,8 @@ const mockWaypoints = [
     'dateTo': new Date('2019-07-11T15:07'),
     'destination': getRandomArrayItem(destinations).id,
     'isFavorite': true,
-    'offers':  [getRandomArrayItem(mockOffers).id],
-    'type': getRandomArrayItem(WAYPOINT_TYPES)
+    'offers':  [2],
+    'type': 'flight'
   },
   {
     'basePrice': 3500,
@@ -91,8 +127,8 @@ const mockWaypoints = [
     'dateTo': new Date('2019-08-12T19:45'),
     'destination': getRandomArrayItem(destinations).id,
     'isFavorite': false,
-    'offers': [ getRandomArrayItem(mockOffers).id],
-    'type': getRandomArrayItem(WAYPOINT_TYPES)
+    'offers': [ ],
+    'type': 'bus'
   },
   {
     'basePrice': 700,
@@ -100,8 +136,8 @@ const mockWaypoints = [
     'dateTo': new Date('2019-09-13T13:15'),
     'destination': getRandomArrayItem(destinations).id,
     'isFavorite': false,
-    'offers':  [getRandomArrayItem(mockOffers).id],
-    'type': getRandomArrayItem(WAYPOINT_TYPES)
+    'offers':  [1],
+    'type': 'flight'
   }
 ];
 
@@ -109,8 +145,17 @@ const getRandomWaypoint = ()=>({id:nanoid(), ...getRandomArrayItem(mockWaypoints
 
 const getDestination = (id)=> destinations.find((destination)=>destination.id === id);
 
-const getOffer = (id)=> mockOffers.find((offer)=>offer.id === id);
+const getOffersByType = (type)=> mockOffers.find((offer) => type === offer.type);
+
+const getCheckedOffers = (type, offers) => {
+  const offersByType = getOffersByType(type);
+
+  const checkedOffers = offersByType.offers?.filter((offer) =>
+    offers
+      .some((offerId) => offerId === offer.id)) || null;
+  return checkedOffers;
+};
 
 const isOfferChecked = (pointOffers, offer)=> !!pointOffers.find((item)=> offer.id === item);
 
-export {getRandomWaypoint, getDestination, getOffer, mockOffers, isOfferChecked};
+export {getRandomWaypoint, getDestination, getOffersByType, getCheckedOffers, mockOffers, isOfferChecked};
