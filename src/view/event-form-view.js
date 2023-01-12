@@ -152,6 +152,9 @@ export default class EventFormView extends AbstractStatefulView{
     return createEventFormTemplate(this._state, this.#formType);
   }
 
+  reset(waypoint){
+    this.updateElement(EventFormView.parseWaypointToState(waypoint));
+  }
 
   _restoreHandlers(){
     if(this.#formType === 'edit'){

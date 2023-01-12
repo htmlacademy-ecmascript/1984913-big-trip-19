@@ -44,6 +44,7 @@ export default class WaypointPresenter{
         this.#replaceComponent('form');
       },
       onReset:()=>{
+        this.#eventFormComponent.reset(this.#waypoint, this.#destinations);
         this.#replaceComponent('form');
       },
     });
@@ -72,6 +73,7 @@ export default class WaypointPresenter{
 
   resetView() {
     if (this.#status !== WaypointStatus.DEFAULT) {
+      this.#eventFormComponent.reset(this.#waypoint, this.#destinations);
       this.#replaceComponent('form');
     }
   }
@@ -97,6 +99,7 @@ export default class WaypointPresenter{
   #handleEscKeyDown = (evt)=> {
     if (isEscapeKey(evt)) {
       evt.preventDefault();
+      this.#eventFormComponent.reset(this.#waypoint, this.#destinations);
       this.#replaceComponent('form');
     }
   };
