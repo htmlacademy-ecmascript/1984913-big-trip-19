@@ -180,6 +180,7 @@ export default class EventFormView extends AbstractStatefulView{
     if (evt.target.tagName === 'INPUT') {
       this.updateElement({
         type: evt.target.value,
+        offers:[]
       });
     }
   };
