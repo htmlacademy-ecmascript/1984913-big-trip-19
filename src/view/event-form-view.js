@@ -22,7 +22,7 @@ const createFormOffersTemplate = (offers, pointOffers, id)=>{
   return offers.map((offer)=> (
     `
 <div class="event__offer-selector">
-<input class="event__offer-checkbox  visually-hidden" id="event-offer-${getOfferName(offer.title)}-${id}" type="checkbox" name="event-offer-${getOfferName(offer.title)}" ${isOfferChecked(pointOffers, offer) ? 'checked' : ''}>
+<input class="event__offer-checkbox  visually-hidden" id="event-offer-${getOfferName(offer.title)}-${id}" type="checkbox" name="event-offer-${getOfferName(offer.title)}" ${isOfferChecked(pointOffers, offer) ? 'checked' : ''}  data-offer-id="${offer.id}">
 <label class="event__offer-label" for="event-offer-${getOfferName(offer.title)}-${id}" >
   <span class="event__offer-title">${offer.title}</span>
   &plus;&euro;&nbsp;
@@ -161,17 +161,18 @@ export default class EventFormView extends AbstractStatefulView{
       this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#resetHandler);
 
     }
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
+    this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offerCheckHandler);
 
     this.element.querySelector('.event--edit').addEventListener('submit', this.#submitHandler);
     this.element.querySelector('.event--edit').addEventListener('reset', this.#resetHandler);
-
-    this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
-    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
   }
 
   #submitHandler = (evt)=>{
     evt.preventDefault();
-    this.#handleSubmit();
+    this.#handleSubmit(EventFormView.parseStateToWaypoint(this._state));
+
   };
 
   #resetHandler = ()=>{
@@ -202,6 +203,20 @@ export default class EventFormView extends AbstractStatefulView{
     });
   };
 
+  #offerCheckHandler = (evt) => {
+    evt.preventDefault();
+    if (evt.target.tagName === 'INPUT') {
+      const checkedOfferId = Number(evt.target.dataset.offerId);
+      const checkedOfferIndex = this._state.offers.indexOf(checkedOfferId);
+      if (checkedOfferIndex === -1) {
+        this._state.offers.push(checkedOfferId);
+        return;
+      }
+
+      this._state.offers.splice(checkedOfferIndex, 1);
+    }
+  };
+
   static parseWaypointToState(waypoint){
     return {
       ...waypoint,
@@ -210,8 +225,6 @@ export default class EventFormView extends AbstractStatefulView{
 
   static parseStateToWaypoint(state){
     const waypoint = {...state};
-    waypoint.destination = waypoint.chosenDestination.id;
-
     return waypoint;
   }
 
