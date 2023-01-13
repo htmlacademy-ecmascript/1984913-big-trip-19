@@ -2,7 +2,8 @@ import { BLANK_WAYPOINT, WAYPOINT_TYPES, DEFAULT_POINT_TYPE } from '../consts.js
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {getOffersByType, getDestination, isOfferChecked } from '../mocks/waypoint.js';
 import { formatEditDatetime } from '../utils/format-dates.js';
-
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 
 const createFormTypeTemplate = (pointType, id)=>
   WAYPOINT_TYPES.map((type)=>
@@ -105,11 +106,11 @@ ${typeListTemplate}
     </div>
 
     <div class="event__field-group  event__field-group--time">
-      <label class="visually-hidden" for="event-start-time-1">From</label>
-      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value='${formatEditDatetime(dateFrom)}'>
+      <label class="visually-hidden" for="event-start-time-${id}">From</label>
+      <input class="event__input  event__input--time" id="event-start-time-${id}" type="text" name="event-start-time" value='${formatEditDatetime(dateFrom)}'>
       &mdash;
-      <label class="visually-hidden" for="event-end-time-1">To</label>
-      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value='${formatEditDatetime(dateTo)}'>
+      <label class="visually-hidden" for="event-end-time-${id}">To</label>
+      <input class="event__input  event__input--time" id="event-end-time-${id}" type="text" name="event-end-time" value='${formatEditDatetime(dateTo)}'>
     </div>
 
     <div class="event__field-group  event__field-group--price">
@@ -138,6 +139,9 @@ export default class EventFormView extends AbstractStatefulView{
   #formType = null;
   #handleSubmit = null;
   #handleReset = null;
+  #dateFromPicker = null;
+  #dateToPicker = null;
+
   constructor({waypoint = BLANK_WAYPOINT, formType, onSubmit, onReset, destinations }){
     super();
     this._setState(EventFormView.parseWaypointToState(waypoint));
@@ -152,6 +156,20 @@ export default class EventFormView extends AbstractStatefulView{
     return createEventFormTemplate(this._state, this.#formType);
   }
 
+  removeElement = () => {
+    super.removeElement();
+
+    if (this.#dateFromPicker) {
+      this.#dateFromPicker.destroy();
+      this.#dateFromPicker = null;
+    }
+
+    if (this.#dateToPicker) {
+      this.#dateToPicker.destroy();
+      this.#dateToPicker = null;
+    }
+  };
+
   reset(waypoint){
     this.updateElement(EventFormView.parseWaypointToState(waypoint));
   }
@@ -164,6 +182,9 @@ export default class EventFormView extends AbstractStatefulView{
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
     this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offerCheckHandler);
+
+    this.#setDateFromPicker();
+    this.#setDateToPicker();
 
     this.element.querySelector('.event--edit').addEventListener('submit', this.#submitHandler);
     this.element.querySelector('.event--edit').addEventListener('reset', this.#resetHandler);
@@ -217,6 +238,44 @@ export default class EventFormView extends AbstractStatefulView{
 
       this._state.offers.splice(checkedOfferIndex, 1);
     }
+  };
+
+  #dateFromChangeHandler = ([userDate]) => {
+    this.updateElement({
+      dateFrom: userDate,
+    });
+  };
+
+  #dateToChangeHandler = ([userDate]) => {
+    this.updateElement({
+      dateTo: userDate,
+    });
+  };
+
+  #setDateFromPicker = () => {
+    this.#dateFromPicker = flatpickr(
+      this.element.querySelector(`#event-start-time-${this._state.id}`),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        maxDate: this._state.dateTo,
+        defaultDate: this._state.dateFrom,
+        onChange: this.#dateFromChangeHandler,
+      }
+    );
+  };
+
+  #setDateToPicker = () => {
+    this.#dateToPicker = flatpickr(
+      this.element.querySelector(`#event-end-time-${this._state.id}`),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        minDate: this._state.dateFrom,
+        defaultDate: this._state.dateTo,
+        onChange: this.#dateToChangeHandler,
+      }
+    );
   };
 
   static parseWaypointToState(waypoint){
