@@ -198,9 +198,11 @@ export default class EventFormView extends AbstractStatefulView{
     }
 
     const chosenDestination = this.#destinations.find((item)=>item.name === evt.target.value);
-    this.updateElement({
-      destination: chosenDestination.id
-    });
+
+    if(chosenDestination){
+      this.updateElement({
+        destination: chosenDestination.id
+      });}
   };
 
   #offerCheckHandler = (evt) => {

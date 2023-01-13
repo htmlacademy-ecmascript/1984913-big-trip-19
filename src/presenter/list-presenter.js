@@ -49,6 +49,7 @@ export default class ListPresenter{
   #renderAddFormButton (){
     const formType = 'add';
     const eventFormComponent = new EventFormView({
+      destinations:this.#destinations,
       formType,
       onSubmit:()=>{
         removeAddForm.call(this);
