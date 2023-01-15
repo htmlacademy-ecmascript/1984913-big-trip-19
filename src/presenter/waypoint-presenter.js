@@ -40,13 +40,8 @@ export default class WaypointPresenter{
       waypoint:this.#waypoint,
       destinations:this.#destinations,
       formType,
-      onSubmit:()=>{
-        this.#replaceComponent('form');
-      },
-      onReset:()=>{
-        this.#eventFormComponent.reset(this.#waypoint, this.#destinations);
-        this.#replaceComponent('form');
-      },
+      onSubmit:this.#handleFormSubmit,
+      onReset:this.#handleFormReset
     });
 
     if(prevWaypointComponent === null || prevEventFormComponent === null){
@@ -112,4 +107,13 @@ export default class WaypointPresenter{
     this.#handleDataChange({...this.#waypoint, isFavorite:!this.#waypoint.isFavorite});
   };
 
+  #handleFormSubmit = (data)=>{
+    this.#handleDataChange(data);
+    this.#replaceComponent('form');
+  };
+
+  #handleFormReset = ()=>{
+    this.#eventFormComponent.reset(this.#waypoint, this.#destinations);
+    this.#replaceComponent('form');
+  };
 }
