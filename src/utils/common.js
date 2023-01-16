@@ -33,6 +33,8 @@ const countDuration = (start, end)=> {
     minutes};
 };
 
+const capitalizeFirstLetter = (word)=> word.charAt(0).toUpperCase() + word.slice(1);
+
 
 const isEscapeKey = (evt)=>evt.key === 'Escape' || evt.key === 'Esc';
 
@@ -41,5 +43,6 @@ export {
   countDuration,
   getDurationInfo,
   updateItem,
+  capitalizeFirstLetter,
   isEscapeKey
 };

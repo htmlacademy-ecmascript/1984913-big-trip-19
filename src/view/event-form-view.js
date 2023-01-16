@@ -1,6 +1,7 @@
 import { BLANK_WAYPOINT, WAYPOINT_TYPES, DEFAULT_POINT_TYPE } from '../consts.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {getOffersByType, getDestination, isOfferChecked } from '../mocks/waypoint.js';
+import { capitalizeFirstLetter } from '../utils/common.js';
 import { formatEditDatetime } from '../utils/format-dates.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
@@ -10,7 +11,7 @@ const createFormTypeTemplate = (pointType, id)=>
     `
          <div class="event__type-item">
             <input id="event-type-${type}-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${pointType === type ? 'checked' : ''}>
-            <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-${id}">${type}</label>
+            <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-${id}"> ${capitalizeFirstLetter(type)}</label>
           </div>
     `
   ).join('');
@@ -193,7 +194,6 @@ export default class EventFormView extends AbstractStatefulView{
   #submitHandler = (evt)=>{
     evt.preventDefault();
     this.#handleSubmit(EventFormView.parseStateToWaypoint(this._state));
-
   };
 
   #resetHandler = ()=>{
