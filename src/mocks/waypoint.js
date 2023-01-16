@@ -1,24 +1,60 @@
 import { nanoid } from 'nanoid';
-import { WAYPOINT_TYPES } from '../consts';
 import { getRandomArrayItem } from '../utils/common';
 
-const mockOffers = [{
-  'id': 1,
-  'title': 'Upgrade to a business class',
-  'price': 120
-}, {
-  'id': 2,
-  'title': 'Order Uber',
-  'price': 20
-}, {
-  'id': 3,
-  'title': 'Rent a car',
-  'price': 300
-}, {
-  'id': 4,
-  'title': 'Add luggage',
-  'price': 70
-}];
+const mockOffers = [
+  {
+    type: 'taxi',
+    offers: [
+      {
+        id: 1,
+        title: 'Rent a limo',
+        price: 120
+      },
+      {
+        id: 2,
+        title: 'Order Uber',
+        price: 20
+      },
+      {
+        id: 3,
+        title: 'Add luggage',
+        price: 40
+      }
+    ]
+  },
+  {
+    type: 'flight',
+    offers: [
+      {
+        id: 1,
+        'title': 'Upgrade to a business class',
+        'price': 120
+      },
+      {
+        id: 2,
+        title: 'Add meal',
+        price: 10
+      }
+    ]
+  },
+  {
+    type: 'bus',
+    offers: []
+  },
+  {
+    type: 'train',
+    offers: []
+  },
+  {
+    type: 'ship',
+    offers: []
+  },
+  {
+    type: 'drive',
+    offers: []
+  }
+];
+
 
 const destinations = [
   {
@@ -27,7 +63,7 @@ const destinations = [
     'name': 'Chamonix',
     'pictures': [
       {
-        'src': 'http://picsum.photos/300/200?r=0.0762563005163317',
+        'src': `http://picsum.photos/300/200?r=${Math.random()}`,
         'description': 'Chamonix parliament building'
       }
     ]
@@ -38,9 +74,13 @@ const destinations = [
     'name': 'Amsterdam',
     'pictures': [
       {
-        'src': 'https://loremflickr.com/248/152?random=125',
+        'src': `http://picsum.photos/300/200?r=${Math.random()}`,
         'description': 'Amsterdam '
-      }
+      },
+      {
+        'src': `http://picsum.photos/300/200?r=${Math.random()}`,
+        'description': 'Amsterdam '
+      },
     ]
   },
   {
@@ -49,7 +89,7 @@ const destinations = [
     'name': 'Geneva',
     'pictures': [
       {
-        'src': 'https://loremflickr.com/248/152?random=320',
+        'src': `http://picsum.photos/300/200?r=${Math.random()}`,
         'description': 'Geneva'
       }
     ]
@@ -58,12 +98,7 @@ const destinations = [
     'id': 4,
     'description': 'Mont Blanc, is a beautiful city. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui. Sed sed nisi sed augue convallis suscipit in sed felis. Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.',
     'name': 'Mont Blanc',
-    'pictures': [
-      {
-        'src': 'https://loremflickr.com/248/152?random=740',
-        'description': 'Mont Blanc'
-      }
-    ]
+    'pictures': []
   }];
 
 const mockWaypoints = [
@@ -73,8 +108,8 @@ const mockWaypoints = [
     'dateTo':  new Date('2019-06-11T15:22'),
     'destination': getRandomArrayItem(destinations).id,
     'isFavorite': false,
-    'offers': [getRandomArrayItem(mockOffers).id, getRandomArrayItem(mockOffers).id],
-    'type': getRandomArrayItem(WAYPOINT_TYPES)
+    'offers': [1,2],
+    'type': 'taxi'
   },
   {
     'basePrice': 2200,
@@ -82,8 +117,8 @@ const mockWaypoints = [
     'dateTo': new Date('2019-07-11T15:07'),
     'destination': getRandomArrayItem(destinations).id,
     'isFavorite': true,
-    'offers':  [getRandomArrayItem(mockOffers).id],
-    'type': getRandomArrayItem(WAYPOINT_TYPES)
+    'offers':  [2],
+    'type': 'flight'
   },
   {
     'basePrice': 3500,
@@ -91,8 +126,8 @@ const mockWaypoints = [
     'dateTo': new Date('2019-08-12T19:45'),
     'destination': getRandomArrayItem(destinations).id,
     'isFavorite': false,
-    'offers': [ getRandomArrayItem(mockOffers).id],
-    'type': getRandomArrayItem(WAYPOINT_TYPES)
+    'offers': [],
+    'type': 'bus'
   },
   {
     'basePrice': 700,
@@ -100,8 +135,8 @@ const mockWaypoints = [
     'dateTo': new Date('2019-09-13T13:15'),
     'destination': getRandomArrayItem(destinations).id,
     'isFavorite': false,
-    'offers':  [getRandomArrayItem(mockOffers).id],
-    'type': getRandomArrayItem(WAYPOINT_TYPES)
+    'offers':  [1],
+    'type': 'flight'
   }
 ];
 
@@ -109,8 +144,17 @@ const getRandomWaypoint = ()=>({id:nanoid(), ...getRandomArrayItem(mockWaypoints
 
 const getDestination = (id)=> destinations.find((destination)=>destination.id === id);
 
-const getOffer = (id)=> mockOffers.find((offer)=>offer.id === id);
+const getOffersByType = (type)=> mockOffers.find((offer) => type === offer.type);
+
+const getCheckedOffers = (type, offers) => {
+  const offersByType = getOffersByType(type);
+
+  const checkedOffers = offersByType.offers?.filter((offer) =>
+    offers
+      .some((offerId) => offerId === offer.id));
+  return checkedOffers;
+};
 
 const isOfferChecked = (pointOffers, offer)=> !!pointOffers.find((item)=> offer.id === item);
 
-export {getRandomWaypoint, getDestination, getOffer, mockOffers, isOfferChecked};
+export {getRandomWaypoint, getDestination, getOffersByType, getCheckedOffers, mockOffers, isOfferChecked, destinations};

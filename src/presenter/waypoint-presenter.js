@@ -13,6 +13,7 @@ export default class WaypointPresenter{
   #eventFormComponent = null;
 
   #waypoint = null;
+  #destinations = null;
   #status = WaypointStatus.DEFAULT;
 
   constructor({eventsContainer, onStatusChange, onDataChange }){
@@ -21,8 +22,9 @@ export default class WaypointPresenter{
     this.#handleDataChange = onDataChange;
   }
 
-  init(waypoint){
+  init(waypoint, destinations){
     this.#waypoint = waypoint;
+    this.#destinations = destinations;
 
     const formType = 'edit';
     const prevWaypointComponent = this.#waypointComponent;
@@ -36,13 +38,10 @@ export default class WaypointPresenter{
 
     this.#eventFormComponent = new EventFormView({
       waypoint:this.#waypoint,
+      destinations:this.#destinations,
       formType,
-      onSubmit:()=>{
-        this.#replaceComponent('form');
-      },
-      onReset:()=>{
-        this.#replaceComponent('form');
-      },
+      onSubmit:this.#handleFormSubmit,
+      onReset:this.#handleFormReset
     });
 
     if(prevWaypointComponent === null || prevEventFormComponent === null){
@@ -69,6 +68,7 @@ export default class WaypointPresenter{
 
   resetView() {
     if (this.#status !== WaypointStatus.DEFAULT) {
+      this.#eventFormComponent.reset(this.#waypoint, this.#destinations);
       this.#replaceComponent('form');
     }
   }
@@ -94,6 +94,7 @@ export default class WaypointPresenter{
   #handleEscKeyDown = (evt)=> {
     if (isEscapeKey(evt)) {
       evt.preventDefault();
+      this.#eventFormComponent.reset(this.#waypoint, this.#destinations);
       this.#replaceComponent('form');
     }
   };
@@ -106,4 +107,13 @@ export default class WaypointPresenter{
     this.#handleDataChange({...this.#waypoint, isFavorite:!this.#waypoint.isFavorite});
   };
 
+  #handleFormSubmit = (data)=>{
+    this.#handleDataChange(data);
+    this.#replaceComponent('form');
+  };
+
+  #handleFormReset = ()=>{
+    this.#eventFormComponent.reset(this.#waypoint, this.#destinations);
+    this.#replaceComponent('form');
+  };
 }

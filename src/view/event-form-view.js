@@ -1,6 +1,7 @@
 import { BLANK_WAYPOINT, WAYPOINT_TYPES, DEFAULT_POINT_TYPE } from '../consts.js';
-import AbstractView from '../framework/view/abstract-view.js';
-import { getDestination, isOfferChecked, mockOffers } from '../mocks/waypoint.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+import {getOffersByType, getDestination, isOfferChecked } from '../mocks/waypoint.js';
+import { capitalizeFirstLetter } from '../utils/common.js';
 import { formatEditDatetime } from '../utils/format-dates.js';
 
 
@@ -9,28 +10,54 @@ const createFormTypeTemplate = (pointType, id)=>
     `
          <div class="event__type-item">
             <input id="event-type-${type}-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${pointType === type ? 'checked' : ''}>
-            <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-${id}">${type}</label>
+            <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-${id}"> ${capitalizeFirstLetter(type)}</label>
           </div>
     `
   ).join('');
 
-const createFormOffersTemplate = (pointOffers, id)=>{
+const createFormOffersTemplate = (offers, pointOffers, id)=>{
   const getOfferName = (title)=>{
     const titleParts = title.split(' ');
     return titleParts[titleParts.length - 1];
   };
-  return mockOffers.map((offer)=> (
+  return offers.map((offer)=> (
     `
-  <div class="event__offer-selector">
-  <input class="event__offer-checkbox  visually-hidden" id="event-offer-${getOfferName(offer.title)}-${id}" type="checkbox" name="event-offer-luggage" ${isOfferChecked(pointOffers, offer) ? 'checked' : ''}>
-  <label class="event__offer-label" for="event-offer-${getOfferName(offer.title)}-${id}" >
-    <span class="event__offer-title">${offer.title}</span>
-    &plus;&euro;&nbsp;
-    <span class="event__offer-price">${offer.price}</span>
-  </label>
+<div class="event__offer-selector">
+<input class="event__offer-checkbox  visually-hidden" id="event-offer-${getOfferName(offer.title)}-${id}" type="checkbox" name="event-offer-${getOfferName(offer.title)}" ${isOfferChecked(pointOffers, offer) ? 'checked' : ''}  data-offer-id="${offer.id}">
+<label class="event__offer-label" for="event-offer-${getOfferName(offer.title)}-${id}" >
+  <span class="event__offer-title">${offer.title}</span>
+  &plus;&euro;&nbsp;
+  <span class="event__offer-price">${offer.price}</span>
+</label>
 </div>
-    `)
-  ).join('');};
+  `)
+  ).join('');
+};
+
+const createFormOffersListTemplate = (pointType, pointOffers, id)=>{
+  const offersByType = getOffersByType(pointType);
+  if(!offersByType || !offersByType.offers || offersByType.offers.length === 0){
+    return '';
+  }
+
+  return ` <section class="event__section  event__section--offers">
+      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+      <div class="event__available-offers">
+   ${createFormOffersTemplate (offersByType.offers, pointOffers, id)}
+      </div>
+    </section>`;
+
+};
+
+const createFormPhotosGallery = (pictures) =>{
+  if(!pictures || pictures.length === 0){
+    return '';
+  }
+  return`<div class="event__photos-container">
+    <div class="event__photos-tape">
+      ${pictures.map((picture)=> `<img class="event__photo" src=${picture.src} alt=${picture.alt}>`)}
+  </div>`;
+};
 
 const createFormControlsTemplate = (formType)=>{
   const resetButtonText = formType === 'edit' ? 'Delete' : 'Cancel';
@@ -45,18 +72,18 @@ const createEventFormTemplate = (waypoint, formType)=>{
   const {basePrice, dateFrom, dateTo, destination, offers, type, id } = waypoint;
   const pointType = type !== '' ? type : DEFAULT_POINT_TYPE;
   const typeListTemplate = createFormTypeTemplate(pointType,id);
-  const offersTemplate = createFormOffersTemplate(offers,id);
+  const offersTemplate = createFormOffersListTemplate(type, offers,id);
   const destinationInfo = getDestination(destination);
   const controlsTemplate = createFormControlsTemplate(formType);
   return(`   <li class="trip-events__item">
 <form class="event event--edit" action="#" method="post">
   <header class="event__header">
   <div class="event__type-wrapper">
-  <label class="event__type  event__type-btn" for="event-type-toggle-1">
+  <label class="event__type  event__type-btn" for="event-type-toggle-${id}">
   <span class="visually-hidden">Choose event type</span>
   <img class="event__type-icon" width="17" height="17" src="img/icons/${pointType}.png" alt="Event type icon">
 </label>
-<input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+<input class="event__type-toggle  visually-hidden" id="event-type-toggle-${id}" type="checkbox">
 <div class="event__type-list">
   <fieldset class="event__type-group">
     <legend class="visually-hidden">Event type</legend>
@@ -74,6 +101,7 @@ ${typeListTemplate}
         <option value="Amsterdam"></option>
         <option value="Geneva"></option>
         <option value="Chamonix"></option>
+        <option value="Mont Blanc"></option>
       </datalist>
     </div>
 
@@ -96,50 +124,110 @@ ${typeListTemplate}
 ${controlsTemplate}
   </header>
   <section class="event__details">
-   ${mockOffers ? ` <section class="event__section  event__section--offers">
-      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-      <div class="event__available-offers">
    ${offersTemplate}
-      </div>
-    </section>` : ''}
-
    ${destinationInfo ? `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
       <p class="event__destination-description">${destinationInfo.description}</p>
+      ${createFormPhotosGallery(destinationInfo.pictures)}
     </section>
   </section>` : ''}
 </form>
 </li>`);};
 
-export default class EventFormView extends AbstractView{
-  #waypoint = BLANK_WAYPOINT;
+export default class EventFormView extends AbstractStatefulView{
+  #destinations = null;
   #formType = null;
   #handleSubmit = null;
   #handleReset = null;
-  constructor({waypoint = BLANK_WAYPOINT, formType, onSubmit, onReset}){
+  constructor({waypoint = BLANK_WAYPOINT, formType, onSubmit, onReset, destinations }){
     super();
-    this.#waypoint = waypoint;
+    this._setState(EventFormView.parseWaypointToState(waypoint));
     this.#formType = formType;
     this.#handleSubmit = onSubmit;
     this.#handleReset = onReset;
-    if(formType === 'edit'){
+    this.#destinations = destinations;
+    this._restoreHandlers();
+  }
+
+  get template(){
+    return createEventFormTemplate(this._state, this.#formType);
+  }
+
+  reset(waypoint){
+    this.updateElement(EventFormView.parseWaypointToState(waypoint));
+  }
+
+  _restoreHandlers(){
+    if(this.#formType === 'edit'){
       this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#resetHandler);
 
     }
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
+    this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offerCheckHandler);
+
     this.element.querySelector('.event--edit').addEventListener('submit', this.#submitHandler);
     this.element.querySelector('.event--edit').addEventListener('reset', this.#resetHandler);
   }
 
-  get template(){
-    return createEventFormTemplate(this.#waypoint, this.#formType);
-  }
-
   #submitHandler = (evt)=>{
     evt.preventDefault();
-    this.#handleSubmit();
+    this.#handleSubmit(EventFormView.parseStateToWaypoint(this._state));
   };
 
   #resetHandler = ()=>{
     this.#handleReset();
   };
+
+  #typeChangeHandler = (evt)=>{
+    evt.preventDefault();
+    if (evt.target.tagName === 'INPUT') {
+      this.updateElement({
+        type: evt.target.value,
+        offers:[]
+      });
+    }
+  };
+
+  #destinationChangeHandler = (evt)=>{
+    evt.preventDefault();
+    if (evt.target.value === '') {
+      this.updateElement({
+        destination: ''
+      });
+    }
+
+    const chosenDestination = this.#destinations.find((item)=>item.name === evt.target.value);
+
+    if(chosenDestination){
+      this.updateElement({
+        destination: chosenDestination.id
+      });}
+  };
+
+  #offerCheckHandler = (evt) => {
+    evt.preventDefault();
+    if (evt.target.tagName === 'INPUT') {
+      const checkedOfferId = Number(evt.target.dataset.offerId);
+      const checkedOfferIndex = this._state.offers.indexOf(checkedOfferId);
+      if (checkedOfferIndex === -1) {
+        this._state.offers.push(checkedOfferId);
+        return;
+      }
+
+      this._state.offers.splice(checkedOfferIndex, 1);
+    }
+  };
+
+  static parseWaypointToState(waypoint){
+    return {
+      ...waypoint,
+    };
+  }
+
+  static parseStateToWaypoint(state){
+    const waypoint = {...state};
+    return waypoint;
+  }
+
 }

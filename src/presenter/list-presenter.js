@@ -22,6 +22,7 @@ export default class ListPresenter{
   #tripInfoComponent = new TripInfoView();
 
   #waypoints = [];
+  #destinations = [];
   #waypointPresenter = new Map();
   #currentSortType = SortType.DAY;
 
@@ -34,6 +35,7 @@ export default class ListPresenter{
 
   init(){
     this.#waypoints = [...this.#waypointsListModel.waypoints];
+    this.#destinations = [...this.#waypointsListModel.destinations];
     this.#renderAddFormButton();
     this.#renderSort();
     if(this.#waypoints.length > 0){
@@ -47,6 +49,7 @@ export default class ListPresenter{
   #renderAddFormButton (){
     const formType = 'add';
     const eventFormComponent = new EventFormView({
+      destinations:this.#destinations,
       formType,
       onSubmit:()=>{
         removeAddForm.call(this);
@@ -87,18 +90,18 @@ export default class ListPresenter{
     this.#waypointPresenter.get(updatedWaypoint.id).init(updatedWaypoint);
   };
 
-  #renderWaypoint(waypoint){
+  #renderWaypoint(waypoint, destinations){
     const waypointPresenter = new WaypointPresenter({
       eventsContainer:this.#eventsListComponent.element,
       onStatusChange:this.#handleStatusChange,
       onDataChange: this.#handleDataChange
     });
-    waypointPresenter.init(waypoint);
+    waypointPresenter.init(waypoint, destinations);
     this.#waypointPresenter.set(waypoint.id, waypointPresenter);
   }
 
   #renderWaypoints(from, to){
-    this.#waypoints.slice(from, to).forEach((waypoint)=>this.#renderWaypoint(waypoint));
+    this.#waypoints.slice(from, to).forEach((waypoint)=>this.#renderWaypoint(waypoint, this.#destinations));
   }
 
 
