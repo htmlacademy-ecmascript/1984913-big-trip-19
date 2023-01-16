@@ -261,6 +261,7 @@ export default class EventFormView extends AbstractStatefulView{
         maxDate: this._state.dateTo,
         defaultDate: this._state.dateFrom,
         onChange: this.#dateFromChangeHandler,
+        'time_24hr':true
       }
     );
   };
@@ -274,6 +275,7 @@ export default class EventFormView extends AbstractStatefulView{
         minDate: this._state.dateFrom,
         defaultDate: this._state.dateTo,
         onChange: this.#dateToChangeHandler,
+        'time_24hr':true
       }
     );
   };
