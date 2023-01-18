@@ -140,15 +140,17 @@ export default class EventFormView extends AbstractStatefulView{
   #formType = null;
   #handleSubmit = null;
   #handleReset = null;
+  #handleDeleteClick = null;
   #dateFromPicker = null;
   #dateToPicker = null;
 
-  constructor({waypoint = BLANK_WAYPOINT, formType, onSubmit, onReset, destinations }){
+  constructor({waypoint = BLANK_WAYPOINT, formType, onSubmit, onReset,onDeleteClick, destinations }){
     super();
     this._setState(EventFormView.parseWaypointToState(waypoint));
     this.#formType = formType;
     this.#handleSubmit = onSubmit;
     this.#handleReset = onReset;
+    this.#handleDeleteClick = onDeleteClick;
     this.#destinations = destinations;
     this._restoreHandlers();
   }
@@ -176,20 +178,28 @@ export default class EventFormView extends AbstractStatefulView{
   }
 
   _restoreHandlers(){
+
+
+    this.#setInnerHandlers();
+
+    this.element.querySelector('.event--edit').addEventListener('submit', this.#submitHandler);
+    this.element.querySelector('.event--edit').addEventListener('reset', this.#resetHandler);
+  }
+
+  #setInnerHandlers = ()=>{
     if(this.#formType === 'edit'){
       this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#resetHandler);
-
+      this.element.querySelector('.event__reset-btn')
+        .addEventListener('click', this.#formDeleteClickHandler);
     }
+
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
     this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offerCheckHandler);
 
     this.#setDateFromPicker();
     this.#setDateToPicker();
-
-    this.element.querySelector('.event--edit').addEventListener('submit', this.#submitHandler);
-    this.element.querySelector('.event--edit').addEventListener('reset', this.#resetHandler);
-  }
+  };
 
   #submitHandler = (evt)=>{
     evt.preventDefault();
@@ -198,6 +208,11 @@ export default class EventFormView extends AbstractStatefulView{
 
   #resetHandler = ()=>{
     this.#handleReset();
+  };
+
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteClick(EventFormView.parseStateToWaypoint(this._state));
   };
 
   #typeChangeHandler = (evt)=>{
