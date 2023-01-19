@@ -32,6 +32,7 @@ export default class WaypointPresenter{
 
     this.#waypointComponent = new WaypointView({
       waypoint:this.#waypoint,
+      destinations:this.#destinations,
       onEditClick: this.#handleEditClick,
       onFavoriteClick: this.#handleFavoriteClick,
     });

@@ -27,7 +27,7 @@ export default class ListPresenter{
   #newWaypointPresenter = null;
 
   #renderedWaypointsAmount = WAYPOINTS_AMOUNT;
-  #destinations = [];
+  #destinations = null;
   #currentSortType = SortType.DAY;
   #currentFilterType = FilterType.EVERYTHING;
 
@@ -94,7 +94,7 @@ export default class ListPresenter{
   #handleModelEvent = (updateType, data) => {
     switch(updateType){
       case UpdateType.PATCH:
-        this.#waypointPresenter.get(data.id).init(data);
+        this.#waypointPresenter.get(data.id).init(data, this.#destinations);
         break;
       case UpdateType.MINOR:
         this.#clearEventsList();

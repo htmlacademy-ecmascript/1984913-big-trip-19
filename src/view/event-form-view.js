@@ -5,6 +5,7 @@ import { capitalizeFirstLetter } from '../utils/common.js';
 import { formatEditDatetime } from '../utils/format-dates.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+import he from 'he';
 
 const createFormTypeTemplate = (pointType, id)=>
   WAYPOINT_TYPES.map((type)=>
@@ -69,13 +70,17 @@ const createFormControlsTemplate = (formType)=>{
 </button>` : ''}
 `;};
 
-const createEventFormTemplate = (waypoint, formType)=>{
+
+const createEventFormTemplate = (waypoint, formType, destinations)=>{
   const {basePrice, dateFrom, dateTo, destination, offers, type, id } = waypoint;
   const pointType = type !== '' ? type : DEFAULT_POINT_TYPE;
   const typeListTemplate = createFormTypeTemplate(pointType,id);
   const offersTemplate = createFormOffersListTemplate(type, offers,id);
   const destinationInfo = getDestination(destination);
   const controlsTemplate = createFormControlsTemplate(formType);
+
+  const destinationsList = destinations?.map((item) => `<option value="${item.name}"></option>`).join('');
+
   return(`   <li class="trip-events__item">
 <form class="event event--edit" action="#" method="post">
   <header class="event__header">
@@ -97,12 +102,9 @@ ${typeListTemplate}
       <label class="event__label  event__type-output" for="event-destination-1">
         ${pointType}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationInfo ? destinationInfo.name : ''}" list="destination-list-1">
+      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationInfo ? he.encode(destinationInfo.name) : ''}" list="destination-list-1">
       <datalist id="destination-list-1">
-        <option value="Amsterdam"></option>
-        <option value="Geneva"></option>
-        <option value="Chamonix"></option>
-        <option value="Mont Blanc"></option>
+${destinationsList}
       </datalist>
     </div>
 
@@ -157,7 +159,7 @@ export default class EventFormView extends AbstractStatefulView{
   }
 
   get template(){
-    return createEventFormTemplate(this._state, this.#formType);
+    return createEventFormTemplate(this._state, this.#formType, this.#destinations);
   }
 
   removeElement = () => {
@@ -179,8 +181,6 @@ export default class EventFormView extends AbstractStatefulView{
   }
 
   _restoreHandlers(){
-
-
     this.#setInnerHandlers();
 
     this.element.querySelector('.event--edit').addEventListener('submit', this.#submitHandler);
@@ -205,6 +205,20 @@ export default class EventFormView extends AbstractStatefulView{
 
   #submitHandler = (evt)=>{
     evt.preventDefault();
+
+    const submitButton = this.element.querySelector('.event__save-btn');
+    const destination = this.element.querySelector('.event__input--destination').value;
+    const price = this.element.querySelector('.event__input--price').value;
+
+    if (price < 1) {
+      submitButton.disabled = true;
+      return;
+    }
+
+    if (destination === '') {
+      submitButton.disabled = true;
+      return;
+    }
     this.#handleSubmit(EventFormView.parseStateToWaypoint(this._state));
   };
 
@@ -229,26 +243,27 @@ export default class EventFormView extends AbstractStatefulView{
 
   #destinationChangeHandler = (evt)=>{
     evt.preventDefault();
-    if (evt.target.value === '') {
-      this.updateElement({
-        destination: ''
-      });
-    }
 
     const chosenDestination = this.#destinations.find((item)=>item.name === evt.target.value);
 
     if(chosenDestination){
       this.updateElement({
         destination: chosenDestination.id
-      });}
+      });
+    }else{
+      evt.target.value = '';
+    }
   };
 
   #priceChangeHandler = (evt)=>{
     evt.preventDefault();
-
-    this.updateElement({
-      basePrice: +evt.target.value
-    });
+    const newPrice = evt.target.value;
+    if(Number(newPrice)){
+      this.updateElement({
+        basePrice: +newPrice
+      });}{
+      evt.target.value = 0;
+    }
   };
 
   #offerCheckHandler = (evt) => {
