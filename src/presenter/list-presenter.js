@@ -2,21 +2,25 @@ import SortView from '../view/sort-view';
 import EventsListView from '../view/events-list-view';
 import { render, RenderPosition, remove } from '../framework/render';
 import TripInfoView from '../view/trip-info-view';
-import ListEmptyView from '../view/list-empty-view';
+import EmptyListView from '../view/empty-list-view';
 import WaypointPresenter from './waypoint-presenter';
-import { SortType, UpdateType, UserAction, WAYPOINTS_AMOUNT} from '../consts';
+import { FilterType, SortType, UpdateType, UserAction, WAYPOINTS_AMOUNT} from '../consts';
 import { sortWaypointByPrice, sortWaypontByTime, sortWaypointByDay } from '../utils/waypoint';
 import NewWaypointPresenter from './new-waypoint-presenter';
+import {filter} from '../utils/filter.js';
+
 export default class ListPresenter{
   #headerContainer = null;
   #eventsContainer = null;
+
   #waypointsListModel = null;
+  #filtersModel = null;
 
   #filterType = null;
 
   #eventsListComponent = new EventsListView();
   #sortComponent = null;
-  #emptyListComponent = new ListEmptyView(this.#filterType);
+  #emptyListComponent = null;
   #tripInfoComponent = new TripInfoView();
 
   #waypointPresenter = new Map();
@@ -25,13 +29,16 @@ export default class ListPresenter{
   #renderedWaypointsAmount = WAYPOINTS_AMOUNT;
   #destinations = [];
   #currentSortType = SortType.DAY;
+  #currentFilterType = FilterType.EVERYTHING;
 
-  constructor({headerContainer, eventsContainer, waypointsListModel, onNewWaypointDestroy }){
+  constructor({headerContainer, eventsContainer,filtersModel, waypointsListModel, onNewWaypointDestroy }){
     this.#headerContainer = headerContainer;
     this.#eventsContainer = eventsContainer;
     this.#waypointsListModel = waypointsListModel;
-    this.#filterType = '';
+    this.#filtersModel = filtersModel;
+
     this.#waypointsListModel.addObserver(this.#handleModelEvent);
+    this.#filtersModel.addObserver(this.#handleModelEvent);
 
     this.#newWaypointPresenter = new NewWaypointPresenter({
       eventsListContainer: this.#eventsListComponent.element,
@@ -42,13 +49,17 @@ export default class ListPresenter{
   }
 
   get waypoints(){
+    this.#filterType = this.#filtersModel.filter;
+    const waypoints = this.#waypointsListModel.waypoints;
+    const filteredWaypoints = filter[this.#filterType](waypoints);
+
     switch (this.#currentSortType) {
       case SortType.TIME:
-        return [...this.#waypointsListModel.waypoints].sort(sortWaypontByTime);
+        return filteredWaypoints.sort(sortWaypontByTime);
       case SortType.PRICE:
-        return [...this.#waypointsListModel.waypoints].sort(sortWaypointByPrice);
+        return filteredWaypoints.sort(sortWaypointByPrice);
     }
-    return [...this.#waypointsListModel.waypoints].sort(sortWaypointByDay) ;
+    return filteredWaypoints.sort(sortWaypointByDay) ;
   }
 
   init(){
@@ -111,6 +122,7 @@ export default class ListPresenter{
   }
 
   #renderEmptyList(){
+    this.#emptyListComponent = new EmptyListView ({filterType: this.#currentFilterType});
     render(this.#emptyListComponent, this.#eventsContainer);
   }
 

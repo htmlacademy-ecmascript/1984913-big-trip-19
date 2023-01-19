@@ -1,16 +1,16 @@
-import { EmptyListMessage } from '../consts.js';
+import { EmptyListMessage, FilterType } from '../consts.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
-const createListEmptyTemplate = (filterType)=>{
+const createEmptyListTemplate = (filterType)=>{
   let messageText = '';
   switch (filterType){
-    case 'past':
+    case FilterType.PAST:
       messageText = EmptyListMessage.PAST;
       break;
-    case 'present':
+    case FilterType.PRESENT:
       messageText = EmptyListMessage.PRESENT;
       break;
-    case 'future':
+    case FilterType.FUTURE:
       messageText = EmptyListMessage.FUTURE;
       break;
     default:
@@ -20,15 +20,15 @@ const createListEmptyTemplate = (filterType)=>{
 
   return `<p class="trip-events__msg">${messageText}</p>`;};
 
-export default class ListEmptyView extends AbstractView {
+export default class EmptyListView extends AbstractView {
   #filterType = null;
 
-  constructor(filterType = 'everything'){
+  constructor({filterType}){
     super();
     this.#filterType = filterType;
   }
 
   get template(){
-    return createListEmptyTemplate(this.#filterType);
+    return createEmptyListTemplate(this.#filterType);
   }
 }
