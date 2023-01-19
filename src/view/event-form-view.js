@@ -1,4 +1,4 @@
-import { BLANK_WAYPOINT, WAYPOINT_TYPES, DEFAULT_POINT_TYPE } from '../consts.js';
+import { BLANK_WAYPOINT, WAYPOINT_TYPES, DEFAULT_POINT_TYPE, FormType } from '../consts.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {getOffersByType, getDestination, isOfferChecked } from '../mocks/waypoint.js';
 import { capitalizeFirstLetter } from '../utils/common.js';
@@ -61,10 +61,10 @@ const createFormPhotosGallery = (pictures) =>{
 };
 
 const createFormControlsTemplate = (formType)=>{
-  const resetButtonText = formType === 'edit' ? 'Delete' : 'Cancel';
+  const resetButtonText = formType === FormType.EDITING ? 'Delete' : 'Cancel';
   return `<button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
  <button class="event__reset-btn" type="reset">${resetButtonText}</button>
- ${formType === 'edit' ? `<button class="event__rollup-btn" type="button">
+ ${formType === FormType.EDITING ? `<button class="event__rollup-btn" type="button">
   <span class="visually-hidden">Open event</span>
 </button>` : ''}
 `;};
@@ -144,6 +144,7 @@ export default class EventFormView extends AbstractStatefulView{
   #dateFromPicker = null;
   #dateToPicker = null;
 
+
   constructor({waypoint = BLANK_WAYPOINT, formType, onSubmit, onReset,onDeleteClick, destinations }){
     super();
     this._setState(EventFormView.parseWaypointToState(waypoint));
@@ -187,7 +188,7 @@ export default class EventFormView extends AbstractStatefulView{
   }
 
   #setInnerHandlers = ()=>{
-    if(this.#formType === 'edit'){
+    if(this.#formType === FormType.EDITING){
       this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#resetHandler);
       this.element.querySelector('.event__reset-btn')
         .addEventListener('click', this.#formDeleteClickHandler);
@@ -195,6 +196,7 @@ export default class EventFormView extends AbstractStatefulView{
 
     this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
     this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offerCheckHandler);
 
     this.#setDateFromPicker();
@@ -239,6 +241,14 @@ export default class EventFormView extends AbstractStatefulView{
       this.updateElement({
         destination: chosenDestination.id
       });}
+  };
+
+  #priceChangeHandler = (evt)=>{
+    evt.preventDefault();
+
+    this.updateElement({
+      basePrice: +evt.target.value
+    });
   };
 
   #offerCheckHandler = (evt) => {
