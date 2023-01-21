@@ -59,7 +59,10 @@ const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
 
+const ApiData = {AUTHORIZATION :'Basic abc0123xz45678s',
+  END_POINT : 'https://19.ecmascript.pages.academy/big-trip'};
 
-export {WAYPOINTS_AMOUNT, WAYPOINT_TYPES, BLANK_WAYPOINT,DEFAULT_POINT_TYPE,WaypointStatus, FormatPattern, FilterType, SortType, EmptyListMessage, UserAction,UpdateType, FormType };
+export {WAYPOINTS_AMOUNT, WAYPOINT_TYPES, BLANK_WAYPOINT,DEFAULT_POINT_TYPE,WaypointStatus, FormatPattern, FilterType, SortType, EmptyListMessage, UserAction,UpdateType, FormType, ApiData };

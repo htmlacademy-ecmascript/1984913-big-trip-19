@@ -1,13 +1,15 @@
-import SortView from '../view/sort-view';
-import EventsListView from '../view/events-list-view';
+
 import { render, RenderPosition, remove } from '../framework/render';
-import TripInfoView from '../view/trip-info-view';
-import EmptyListView from '../view/empty-list-view';
-import WaypointPresenter from './waypoint-presenter';
 import { FilterType, SortType, UpdateType, UserAction, WAYPOINTS_AMOUNT} from '../consts';
 import { sortWaypointByPrice, sortWaypontByTime, sortWaypointByDay } from '../utils/waypoint';
-import NewWaypointPresenter from './new-waypoint-presenter';
 import {filter} from '../utils/filter.js';
+import SortView from '../view/sort-view';
+import EventsListView from '../view/events-list-view';
+import TripInfoView from '../view/trip-info-view';
+import EmptyListView from '../view/empty-list-view';
+import LoadingView from '../view/loading-view';
+import WaypointPresenter from './waypoint-presenter';
+import NewWaypointPresenter from './new-waypoint-presenter';
 
 export default class ListPresenter{
   #headerContainer = null;
@@ -18,18 +20,21 @@ export default class ListPresenter{
 
   #filterType = null;
 
-  #eventsListComponent = new EventsListView();
   #sortComponent = null;
   #emptyListComponent = null;
+  #eventsListComponent = new EventsListView();
   #tripInfoComponent = new TripInfoView();
+  #loadingComponent = new LoadingView();
+
 
   #waypointPresenter = new Map();
   #newWaypointPresenter = null;
 
-  #renderedWaypointsAmount = WAYPOINTS_AMOUNT;
   #destinations = null;
+  #renderedWaypointsAmount = WAYPOINTS_AMOUNT;
   #currentSortType = SortType.DAY;
   #currentFilterType = FilterType.EVERYTHING;
+  #isLoading = true;
 
   constructor({headerContainer, eventsContainer,filtersModel, waypointsListModel, onNewWaypointDestroy }){
     this.#headerContainer = headerContainer;
@@ -104,6 +109,12 @@ export default class ListPresenter{
         this.#clearEventsList({resetRenderedWaypointsAmount: true, resetSortType:true});
         this.#renderEventsList();
         break;
+      case UpdateType.INIT:{
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderEventsList();
+        break;
+      }
     }
   };
 
@@ -126,6 +137,10 @@ export default class ListPresenter{
     render(this.#emptyListComponent, this.#eventsContainer);
   }
 
+  #renderLoading(){
+    render(this.#loadingComponent, this.#eventsContainer, RenderPosition.AFTERBEGIN);
+  }
+
   #handleSortTypeChange = (sortType)=>{
     if (this.#currentSortType === sortType) {
       return;
@@ -145,6 +160,11 @@ export default class ListPresenter{
   }
 
   #renderEventsList(){
+    if(this.#isLoading){
+      this.#renderLoading();
+      return;
+    }
+
     const waypoints = this.waypoints;
     const waypointsAmount = waypoints.length;
     this.#renderSort();

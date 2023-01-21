@@ -1,12 +1,37 @@
+import { UpdateType } from '../consts.js';
 import Observable from '../framework/observable.js';
-import { WAYPOINTS_AMOUNT } from '../consts';
-import { getRandomWaypoint, destinations } from '../mocks/waypoint';
 
 export default class WaypointsListModel extends Observable{
-  #waypoints = Array.from({length:WAYPOINTS_AMOUNT}, getRandomWaypoint);
+  #waypointsApiService = null;
+  #waypoints = [];
+  #destinations = [];
+  #offers = [];
+
+
+  constructor({waypointsApiService}){
+    super();
+    this.#waypointsApiService = waypointsApiService;
+  }
 
   get waypoints(){
     return this.#waypoints;
+  }
+
+
+  async init(){
+    const waypointsData = await this.#waypointsApiService.waypoints;
+    const destinationsData = await this.#waypointsApiService.destinations;
+    const offersData = await this.#waypointsApiService.offers;
+    try{
+      this.#waypoints = waypointsData.map(this.#adaptToClient);
+      this.#destinations = destinationsData;
+      this.#offers = offersData;
+    }catch(err){
+      this.#waypoints = [];
+      this.#destinations = [];
+      this.#offers = [];
+    }
+    this._notify(UpdateType.INIT);
   }
 
   addWaypoint(updateType, update){
@@ -50,8 +75,28 @@ export default class WaypointsListModel extends Observable{
     this._notify(updateType);
   }
 
+
+  #adaptToClient(waypoint){
+    const adaptedWaypoint = {...waypoint,
+      dateTo:new Date(waypoint['date_to']),
+      dateFrom: new Date (waypoint['date_from']),
+      basePrice:waypoint['base_price'],
+      isFavorite: waypoint['is_favorite']
+    };
+    delete adaptedWaypoint['date_to'];
+    delete adaptedWaypoint['date_from'];
+    delete adaptedWaypoint['base_price'];
+    delete adaptedWaypoint['is_favorite'];
+
+    return adaptedWaypoint;
+  }
+
   get destinations(){
-    return destinations;
+    return this.#destinations;
+  }
+
+  get offers(){
+    return this.#offers;
   }
 
 }
