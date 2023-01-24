@@ -30,7 +30,6 @@ export default class ListPresenter{
   #waypointPresenter = new Map();
   #newWaypointPresenter = null;
 
-  #destinations = null;
   #renderedWaypointsAmount = WAYPOINTS_AMOUNT;
   #currentSortType = SortType.DAY;
   #currentFilterType = FilterType.EVERYTHING;
@@ -49,7 +48,8 @@ export default class ListPresenter{
       eventsListContainer: this.#eventsListComponent.element,
       onDataChange:this.#handleViewAction,
       onDestroy:onNewWaypointDestroy,
-      destinations:[...this.#waypointsListModel.destinations]
+      destinations:this.destinations,
+      offers:this.offers
     });
   }
 
@@ -67,8 +67,15 @@ export default class ListPresenter{
     return filteredWaypoints.sort(sortWaypointByDay) ;
   }
 
+  get destinations (){
+    return this.#waypointsListModel.destinations;
+  }
+
+  get offers (){
+    return this.#waypointsListModel.offers;
+  }
+
   init(){
-    this.#destinations = [...this.#waypointsListModel.destinations];
     this.#renderEventsList();
   }
 
@@ -99,7 +106,7 @@ export default class ListPresenter{
   #handleModelEvent = (updateType, data) => {
     switch(updateType){
       case UpdateType.PATCH:
-        this.#waypointPresenter.get(data.id).init(data, this.#destinations);
+        this.#waypointPresenter.get(data.id).init(data, this.destinations, this.offers);
         break;
       case UpdateType.MINOR:
         this.#clearEventsList();
@@ -118,18 +125,18 @@ export default class ListPresenter{
     }
   };
 
-  #renderWaypoint(waypoint, destinations){
+  #renderWaypoint(waypoint, destinations, offers){
     const waypointPresenter = new WaypointPresenter({
       eventsContainer:this.#eventsListComponent.element,
       onStatusChange:this.#handleStatusChange,
       onDataChange: this.#handleViewAction
     });
-    waypointPresenter.init(waypoint, destinations);
+    waypointPresenter.init(waypoint, destinations, offers);
     this.#waypointPresenter.set(waypoint.id, waypointPresenter);
   }
 
   #renderWaypoints(waypoints){
-    waypoints.forEach((waypoint)=>this.#renderWaypoint(waypoint, this.#destinations));
+    waypoints.forEach((waypoint)=>this.#renderWaypoint(waypoint, this.destinations, this.offers));
   }
 
   #renderEmptyList(){

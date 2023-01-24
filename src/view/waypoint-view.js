@@ -1,7 +1,7 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { countDuration, getDurationInfo} from '../utils/common.js';
+import { getDestination, getCheckedOffers} from '../utils/waypoint.js';
 import { formatDate, formatTime, formatDatetimeEvent } from '../utils/format-dates.js';
-import { getDestination,getCheckedOffers } from '../mocks/waypoint.js';
 
 const createOffersTemplate = (offers)=> offers.map((offer)=> `<li class="event__offer">
 <span class="event__offer-title">${offer.title}</span>
@@ -10,15 +10,15 @@ const createOffersTemplate = (offers)=> offers.map((offer)=> `<li class="event__
 </li>`).join('');
 
 
-const createWaypointTemplate = (waypoint)=>{
+const createWaypointTemplate = (waypoint, destinations, offersData)=>{
   const {basePrice, dateFrom, dateTo, destination, isFavorite, offers, type } = waypoint;
   const date = formatDate(dateFrom);
   const startTime = formatTime(dateFrom);
   const endTime = formatTime(dateTo);
   const duration = getDurationInfo(countDuration(dateFrom,dateTo));
   const favoriteClassName = isFavorite ? 'event__favorite-btn--active' : '';
-  const destinationInfo = getDestination(destination);
-  const checkedOffers = getCheckedOffers(type, offers);
+  const destinationInfo = getDestination(destination, destinations);
+  const checkedOffers = getCheckedOffers(type, offers, offersData);
   return(` <li class="trip-events__item">
 <div class="event">
   <time class="event__date" datetime=${formatDatetimeEvent(dateFrom,0,10)}>${date}</time>
@@ -58,12 +58,16 @@ const createWaypointTemplate = (waypoint)=>{
 
 export default class WaypointView extends AbstractView{
   #waypoint = null;
+  #destinations = null;
+  #offers = null;
   #handleEditClick = null;
   #handleFavoriteClick = null;
 
-  constructor({waypoint, onEditClick, onFavoriteClick}){
+  constructor({waypoint,destinations, offers, onEditClick, onFavoriteClick}){
     super();
     this.#waypoint = waypoint;
+    this.#destinations = destinations;
+    this.#offers = offers;
     this.#handleEditClick = onEditClick;
     this.#handleFavoriteClick = onFavoriteClick;
 
@@ -72,7 +76,7 @@ export default class WaypointView extends AbstractView{
   }
 
   get template(){
-    return createWaypointTemplate(this.#waypoint);
+    return createWaypointTemplate(this.#waypoint,this.#destinations, this.#offers);
   }
 
   #editClickHandler = (evt)=>{
