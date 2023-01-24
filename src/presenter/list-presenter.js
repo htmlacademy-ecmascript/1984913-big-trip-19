@@ -4,7 +4,7 @@ import { render, RenderPosition, remove } from '../framework/render';
 import TripInfoView from '../view/trip-info-view';
 import EmptyListView from '../view/empty-list-view';
 import WaypointPresenter from './waypoint-presenter';
-import { FilterType, SortType, UpdateType, UserAction, WAYPOINTS_AMOUNT} from '../consts';
+import { FilterType, SortType, UpdateType, UserAction} from '../consts';
 import { sortWaypointByPrice, sortWaypontByTime, sortWaypointByDay } from '../utils/waypoint';
 import NewWaypointPresenter from './new-waypoint-presenter';
 import {filter} from '../utils/filter.js';
@@ -26,7 +26,6 @@ export default class ListPresenter{
   #waypointPresenter = new Map();
   #newWaypointPresenter = null;
 
-  #renderedWaypointsAmount = WAYPOINTS_AMOUNT;
   #destinations = null;
   #currentSortType = SortType.DAY;
   #currentFilterType = FilterType.EVERYTHING;
@@ -101,7 +100,7 @@ export default class ListPresenter{
         this.#renderEventsList();
         break;
       case UpdateType.MAJOR:
-        this.#clearEventsList({resetRenderedWaypointsAmount: true, resetSortType:true});
+        this.#clearEventsList({ resetSortType:true});
         this.#renderEventsList();
         break;
     }
@@ -131,7 +130,7 @@ export default class ListPresenter{
       return;
     }
     this.#currentSortType = sortType ;
-    this.#clearEventsList({resetRenderedWaypointsAmount: true});
+    this.#clearEventsList();
     this.#renderEventsList();
   };
 
@@ -155,21 +154,15 @@ export default class ListPresenter{
       this.#renderEmptyList();
     }
     render(this.#eventsListComponent, this.#eventsContainer);
-    this.#renderWaypoints(waypoints.slice(0, Math.min(waypointsAmount, this.#renderedWaypointsAmount)));
+    this.#renderWaypoints(waypoints);
   }
 
-  #clearEventsList({resetRenderedWaypointsAmount = false, resetSortType = false} = {}){
-    const waypointsAmount = this.waypoints.length;
+  #clearEventsList({ resetSortType = false} = {}){
     this.#waypointPresenter.forEach((presenter)=> presenter.destroy());
     this.#waypointPresenter.clear();
     this.#newWaypointPresenter.destroy();
     remove(this.#sortComponent);
     remove(this.#emptyListComponent);
-    if(resetRenderedWaypointsAmount){
-      this.#renderedWaypointsAmount = WAYPOINTS_AMOUNT;
-    }else{
-      this.#renderedWaypointsAmount = Math.min(waypointsAmount,this.#renderedWaypointsAmount );
-    }
     if(resetSortType){
       this.#currentSortType = SortType.DAY;
     }
