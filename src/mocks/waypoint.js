@@ -113,8 +113,8 @@ const mockWaypoints = [
   },
   {
     'basePrice': 2200,
-    'dateFrom': new Date('2019-07-11T10:10'),
-    'dateTo': new Date('2019-07-11T15:07'),
+    'dateFrom': new Date('2024-07-11T10:10'),
+    'dateTo': new Date('2024-07-11T15:07'),
     'destination': getRandomArrayItem(destinations).id,
     'isFavorite': true,
     'offers':  [2],

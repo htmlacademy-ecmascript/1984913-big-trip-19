@@ -259,9 +259,10 @@ export default class EventFormView extends AbstractStatefulView{
     evt.preventDefault();
     const newPrice = evt.target.value;
     if(Number(newPrice)){
-      this.updateElement({
+      this._setState({
         basePrice: +newPrice
-      });}{
+      });}
+    else{
       evt.target.value = 0;
     }
   };
