@@ -80,7 +80,7 @@ export default class ListPresenter{
 
   createWaypoint(){
     this.#currentSortType = SortType.DAY;
-    this.#newWaypointPresenter.init();
+    this.#newWaypointPresenter.init(this.destinations, this.offers);
   }
 
   #handleStatusChange = ()=>{
