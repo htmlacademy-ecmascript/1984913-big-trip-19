@@ -2,8 +2,6 @@ import dayjs from 'dayjs';
 
 const getRandomArrayItem = (items)=> items[Math.floor(Math.random() * items.length)];
 
-const updateItem = (items, update)=> items.map((item) => item.id === update.id ? update : item);
-
 const getDurationInfo = ({days, hours, minutes}) =>{
   let durationInfo = '';
   if(days > 0){
@@ -42,7 +40,6 @@ export {
   getRandomArrayItem,
   countDuration,
   getDurationInfo,
-  updateItem,
   capitalizeFirstLetter,
   isEscapeKey
 };

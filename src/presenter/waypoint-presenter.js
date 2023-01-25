@@ -2,7 +2,8 @@ import WaypointView from '../view/waypoint-view';
 import EventFormView from '../view/event-form-view';
 import { render, replace, remove } from '../framework/render';
 import { isEscapeKey } from '../utils/common.js';
-import { WaypointStatus } from '../consts';
+import { FormType, UpdateType, UserAction, WaypointStatus } from '../consts';
+import { isDatesEqual } from '../utils/waypoint';
 
 export default class WaypointPresenter{
   #eventsContainer = null;
@@ -26,12 +27,12 @@ export default class WaypointPresenter{
     this.#waypoint = waypoint;
     this.#destinations = destinations;
 
-    const formType = 'edit';
     const prevWaypointComponent = this.#waypointComponent;
     const prevEventFormComponent = this.#eventFormComponent;
 
     this.#waypointComponent = new WaypointView({
       waypoint:this.#waypoint,
+      destinations:this.#destinations,
       onEditClick: this.#handleEditClick,
       onFavoriteClick: this.#handleFavoriteClick,
     });
@@ -39,9 +40,10 @@ export default class WaypointPresenter{
     this.#eventFormComponent = new EventFormView({
       waypoint:this.#waypoint,
       destinations:this.#destinations,
-      formType,
+      formType:FormType.EDITING,
       onSubmit:this.#handleFormSubmit,
-      onReset:this.#handleFormReset
+      onReset:this.#handleFormReset,
+      onDeleteClick:this.#handleDeleteClick
     });
 
     if(prevWaypointComponent === null || prevEventFormComponent === null){
@@ -103,12 +105,21 @@ export default class WaypointPresenter{
     this.#replaceComponent('waypoint');
   };
 
-  #handleFavoriteClick = ()=>{
-    this.#handleDataChange({...this.#waypoint, isFavorite:!this.#waypoint.isFavorite});
+  #handleDeleteClick = (data)=>{
+    this.#handleDataChange(UserAction.DELETE_WAYPOINT, UpdateType.MINOR,data);
   };
 
-  #handleFormSubmit = (data)=>{
-    this.#handleDataChange(data);
+  #handleFavoriteClick = ()=>{
+    this.#handleDataChange(UserAction.UPDATE_WAYPOINT, UpdateType.MINOR,{...this.#waypoint, isFavorite:!this.#waypoint.isFavorite});
+  };
+
+  #handleFormSubmit = (update)=>{
+    const isDatesFromEqual = isDatesEqual(this.#waypoint.dateFrom, update.dateFrom);
+    const isDatesToEqual = isDatesEqual(this.#waypoint.dateTo, update.dateTo);
+    const isBasePricesEqual = this.#waypoint.basePrice === update.basePrice;
+    const isMinorUpdate = !isDatesFromEqual || !isDatesToEqual || !isBasePricesEqual;
+    const updateType = isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH;
+    this.#handleDataChange(UserAction.UPDATE_WAYPOINT,updateType ,update);
     this.#replaceComponent('form');
   };
 

@@ -1,10 +1,11 @@
-import { BLANK_WAYPOINT, WAYPOINT_TYPES, DEFAULT_POINT_TYPE } from '../consts.js';
+import { BLANK_WAYPOINT, WAYPOINT_TYPES, DEFAULT_POINT_TYPE, FormType } from '../consts.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {getOffersByType, getDestination, isOfferChecked } from '../mocks/waypoint.js';
 import { capitalizeFirstLetter } from '../utils/common.js';
 import { formatEditDatetime } from '../utils/format-dates.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+import he from 'he';
 
 const createFormTypeTemplate = (pointType, id)=>
   WAYPOINT_TYPES.map((type)=>
@@ -61,21 +62,25 @@ const createFormPhotosGallery = (pictures) =>{
 };
 
 const createFormControlsTemplate = (formType)=>{
-  const resetButtonText = formType === 'edit' ? 'Delete' : 'Cancel';
+  const resetButtonText = formType === FormType.EDITING ? 'Delete' : 'Cancel';
   return `<button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
  <button class="event__reset-btn" type="reset">${resetButtonText}</button>
- ${formType === 'edit' ? `<button class="event__rollup-btn" type="button">
+ ${formType === FormType.EDITING ? `<button class="event__rollup-btn" type="button">
   <span class="visually-hidden">Open event</span>
 </button>` : ''}
 `;};
 
-const createEventFormTemplate = (waypoint, formType)=>{
+
+const createEventFormTemplate = (waypoint, formType, destinations)=>{
   const {basePrice, dateFrom, dateTo, destination, offers, type, id } = waypoint;
   const pointType = type !== '' ? type : DEFAULT_POINT_TYPE;
   const typeListTemplate = createFormTypeTemplate(pointType,id);
   const offersTemplate = createFormOffersListTemplate(type, offers,id);
   const destinationInfo = getDestination(destination);
   const controlsTemplate = createFormControlsTemplate(formType);
+
+  const destinationsList = destinations?.map((item) => `<option value="${item.name}"></option>`).join('');
+
   return(`   <li class="trip-events__item">
 <form class="event event--edit" action="#" method="post">
   <header class="event__header">
@@ -97,12 +102,9 @@ ${typeListTemplate}
       <label class="event__label  event__type-output" for="event-destination-1">
         ${pointType}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationInfo ? destinationInfo.name : ''}" list="destination-list-1">
+      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationInfo ? he.encode(destinationInfo.name) : ''}" list="destination-list-1">
       <datalist id="destination-list-1">
-        <option value="Amsterdam"></option>
-        <option value="Geneva"></option>
-        <option value="Chamonix"></option>
-        <option value="Mont Blanc"></option>
+${destinationsList}
       </datalist>
     </div>
 
@@ -140,21 +142,24 @@ export default class EventFormView extends AbstractStatefulView{
   #formType = null;
   #handleSubmit = null;
   #handleReset = null;
+  #handleDeleteClick = null;
   #dateFromPicker = null;
   #dateToPicker = null;
 
-  constructor({waypoint = BLANK_WAYPOINT, formType, onSubmit, onReset, destinations }){
+
+  constructor({waypoint = BLANK_WAYPOINT, formType, onSubmit, onReset,onDeleteClick, destinations }){
     super();
     this._setState(EventFormView.parseWaypointToState(waypoint));
     this.#formType = formType;
     this.#handleSubmit = onSubmit;
     this.#handleReset = onReset;
+    this.#handleDeleteClick = onDeleteClick;
     this.#destinations = destinations;
     this._restoreHandlers();
   }
 
   get template(){
-    return createEventFormTemplate(this._state, this.#formType);
+    return createEventFormTemplate(this._state, this.#formType, this.#destinations);
   }
 
   removeElement = () => {
@@ -176,28 +181,54 @@ export default class EventFormView extends AbstractStatefulView{
   }
 
   _restoreHandlers(){
-    if(this.#formType === 'edit'){
-      this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#resetHandler);
-
-    }
-    this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
-    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
-    this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offerCheckHandler);
-
-    this.#setDateFromPicker();
-    this.#setDateToPicker();
+    this.#setInnerHandlers();
 
     this.element.querySelector('.event--edit').addEventListener('submit', this.#submitHandler);
     this.element.querySelector('.event--edit').addEventListener('reset', this.#resetHandler);
   }
 
+  #setInnerHandlers = ()=>{
+    if(this.#formType === FormType.EDITING){
+      this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#resetHandler);
+      this.element.querySelector('.event__reset-btn')
+        .addEventListener('click', this.#formDeleteClickHandler);
+    }
+
+    this.element.querySelector('.event__type-group').addEventListener('change', this.#typeChangeHandler);
+    this.element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler);
+    this.element.querySelector('.event__input--price').addEventListener('change', this.#priceChangeHandler);
+    this.element.querySelector('.event__available-offers')?.addEventListener('change', this.#offerCheckHandler);
+
+    this.#setDateFromPicker();
+    this.#setDateToPicker();
+  };
+
   #submitHandler = (evt)=>{
     evt.preventDefault();
+
+    const submitButton = this.element.querySelector('.event__save-btn');
+    const destination = this.element.querySelector('.event__input--destination').value;
+    const price = this.element.querySelector('.event__input--price').value;
+
+    if (price < 1) {
+      submitButton.disabled = true;
+      return;
+    }
+
+    if (destination === '') {
+      submitButton.disabled = true;
+      return;
+    }
     this.#handleSubmit(EventFormView.parseStateToWaypoint(this._state));
   };
 
   #resetHandler = ()=>{
     this.#handleReset();
+  };
+
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleDeleteClick(EventFormView.parseStateToWaypoint(this._state));
   };
 
   #typeChangeHandler = (evt)=>{
@@ -212,18 +243,28 @@ export default class EventFormView extends AbstractStatefulView{
 
   #destinationChangeHandler = (evt)=>{
     evt.preventDefault();
-    if (evt.target.value === '') {
-      this.updateElement({
-        destination: ''
-      });
-    }
 
     const chosenDestination = this.#destinations.find((item)=>item.name === evt.target.value);
 
     if(chosenDestination){
       this.updateElement({
         destination: chosenDestination.id
+      });
+    }else{
+      evt.target.value = '';
+    }
+  };
+
+  #priceChangeHandler = (evt)=>{
+    evt.preventDefault();
+    const newPrice = evt.target.value;
+    if(Number(newPrice)){
+      this._setState({
+        basePrice: +newPrice
       });}
+    else{
+      evt.target.value = 0;
+    }
   };
 
   #offerCheckHandler = (evt) => {
