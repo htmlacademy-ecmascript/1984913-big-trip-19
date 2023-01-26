@@ -42,10 +42,9 @@ const BLANK_WAYPOINT = {
   'dateFrom': '',
   'dateTo': '',
   'destination': '',
-  'id': '',
   'isFavorite': false,
   'offers': [],
-  'type': ''
+  'type':  DEFAULT_POINT_TYPE
 };
 
 

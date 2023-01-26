@@ -56,7 +56,6 @@ export default class ListPresenter{
     this.#filterType = this.#filtersModel.filter;
     const waypoints = this.#waypointsListModel.waypoints;
     const filteredWaypoints = filter[this.#filterType](waypoints);
-
     switch (this.#currentSortType) {
       case SortType.TIME:
         return filteredWaypoints.sort(sortWaypontByTime);
@@ -80,6 +79,7 @@ export default class ListPresenter{
 
   createWaypoint(){
     this.#currentSortType = SortType.DAY;
+    this.#filtersModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
     this.#newWaypointPresenter.init(this.destinations, this.offers);
   }
 
@@ -112,7 +112,7 @@ export default class ListPresenter{
         this.#renderEventsList();
         break;
       case UpdateType.MAJOR:
-        this.#clearEventsList({resetSortType:true});
+        this.#clearEventsList({ resetSortType:true});
         this.#renderEventsList();
         break;
       case UpdateType.INIT:{
@@ -190,9 +190,8 @@ export default class ListPresenter{
     this.#newWaypointPresenter.destroy();
     remove(this.#sortComponent);
     remove(this.#emptyListComponent);
-
     if(resetSortType){
-      this.currentSortType = SortType.DAY;
+      this.#currentSortType = SortType.DAY;
     }
   }
 }
