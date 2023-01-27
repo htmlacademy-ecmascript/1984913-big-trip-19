@@ -35,6 +35,26 @@ export default class NewWaypointPresenter {
     document.addEventListener('keydown', this.#escKeyDownHandler);
   }
 
+  setSaving() {
+    this.#waypointAddComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this.#waypointAddComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#waypointAddComponent.shake(resetFormState);
+  }
+
+
   destroy() {
     if (this.#waypointAddComponent === null) {
       return;

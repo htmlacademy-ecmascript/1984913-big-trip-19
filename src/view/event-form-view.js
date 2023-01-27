@@ -7,17 +7,17 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import he from 'he';
 
-const createFormTypeTemplate = (pointType, id)=>
+const createFormTypeTemplate = (pointType, id, isDisabled)=>
   WAYPOINT_TYPES.map((type)=>
     `
          <div class="event__type-item">
-            <input id="event-type-${type}-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${pointType === type ? 'checked' : ''}>
+            <input id="event-type-${type}-${id}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${pointType === type ? 'checked' : ''}${isDisabled ? 'disabled' : ''}>
             <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-${id}"> ${capitalizeFirstLetter(type)}</label>
           </div>
     `
   ).join('');
 
-const createFormOffersTemplate = (offers, pointOffers, id)=>{
+const createFormOffersTemplate = (offers, pointOffers, id, isDisabled)=>{
   const getOfferName = (title)=>{
     const titleParts = title.split(' ');
     const name = titleParts[titleParts.length - 1];
@@ -29,7 +29,7 @@ const createFormOffersTemplate = (offers, pointOffers, id)=>{
   return offers.map((offer)=> (
     `
 <div class="event__offer-selector">
-<input class="event__offer-checkbox  visually-hidden" id="event-offer-${getOfferName(offer.title)}-${id}" type="checkbox" name="event-offer-${getOfferName(offer.title)}" ${isOfferChecked(pointOffers, offer) ? 'checked' : ''}  data-offer-id="${offer.id}">
+<input class="event__offer-checkbox  visually-hidden" id="event-offer-${getOfferName(offer.title)}-${id}" type="checkbox" name="event-offer-${getOfferName(offer.title)}" ${isOfferChecked(pointOffers, offer) ? 'checked' : ''}  data-offer-id="${offer.id}  ${isDisabled ? 'disabled' : ''}">
 <label class="event__offer-label" for="event-offer-${getOfferName(offer.title)}-${id}" >
   <span class="event__offer-title">${offer.title}</span>
   &plus;&euro;&nbsp;
@@ -40,7 +40,7 @@ const createFormOffersTemplate = (offers, pointOffers, id)=>{
   ).join('');
 };
 
-const createFormOffersListTemplate = (pointType, pointOffers, id, offersData)=>{
+const createFormOffersListTemplate = (pointType, pointOffers, id, offersData, isDisabled)=>{
   const offersByType = getOffersByType(pointType, offersData);
   if(!offersByType || !offersByType.offers || offersByType.offers.length === 0){
     return '';
@@ -49,7 +49,7 @@ const createFormOffersListTemplate = (pointType, pointOffers, id, offersData)=>{
   return ` <section class="event__section  event__section--offers">
       <h3 class="event__section-title  event__section-title--offers">Offers</h3>
       <div class="event__available-offers">
-   ${createFormOffersTemplate (offersByType.offers, pointOffers, id)}
+   ${createFormOffersTemplate (offersByType.offers, pointOffers, id, isDisabled)}
       </div>
     </section>`;
 
@@ -65,24 +65,29 @@ const createFormPhotosGallery = (pictures) =>{
   </div>`;
 };
 
-const createFormControlsTemplate = (formType)=>{
-  const resetButtonText = formType === FormType.EDITING ? 'Delete' : 'Cancel';
-  return `<button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
- <button class="event__reset-btn" type="reset">${resetButtonText}</button>
- ${formType === FormType.EDITING ? `<button class="event__rollup-btn" type="button">
+const createFormControlsTemplate = (formType, isDisabled, isSaving, isDeleting)=>{
+
+  const getResetButtonText = ()=>{
+    if(formType === FormType.EDITING ){
+      return isDeleting ? 'Deleting...' : 'Delete';
+    }
+    return 'Cancel';
+  };
+  return `<button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+ <button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${getResetButtonText()}</button>
+ ${formType === FormType.EDITING ? `<button class="event__rollup-btn" type="button" >
   <span class="visually-hidden">Open event</span>
 </button>` : ''}
 `;};
 
 
-const createEventFormTemplate = (waypoint, formType, destinations, offersData)=>{
-  const {basePrice, dateFrom, dateTo, destination, offers, type, id } = waypoint;
+const createEventFormTemplate = (waypoint, formType, destinations, offersData,)=>{
+  const {basePrice, dateFrom, dateTo, destination, offers, type, id, isDisabled, isSaving, isDeleting } = waypoint;
   const pointType = type !== '' ? type : DEFAULT_POINT_TYPE;
   const typeListTemplate = createFormTypeTemplate(pointType,id);
   const offersTemplate = createFormOffersListTemplate(type, offers,id, offersData);
   const destinationInfo = getDestination(destination, destinations);
-  const controlsTemplate = createFormControlsTemplate(formType);
-
+  const controlsTemplate = createFormControlsTemplate(formType,isDisabled, isSaving, isDeleting);
   const destinationsList = destinations?.map((item) => `<option value="${item.name}"></option>`).join('');
 
   return(`   <li class="trip-events__item">
@@ -93,7 +98,7 @@ const createEventFormTemplate = (waypoint, formType, destinations, offersData)=>
   <span class="visually-hidden">Choose event type</span>
   <img class="event__type-icon" width="17" height="17" src="img/icons/${pointType}.png" alt="Event type icon">
 </label>
-<input class="event__type-toggle  visually-hidden" id="event-type-toggle-${id}" type="checkbox">
+<input class="event__type-toggle  visually-hidden" id="event-type-toggle-${id}" type="checkbox"  ${isDisabled ? 'disabled' : ''}>
 <div class="event__type-list">
   <fieldset class="event__type-group">
     <legend class="visually-hidden">Event type</legend>
@@ -106,7 +111,7 @@ ${typeListTemplate}
       <label class="event__label  event__type-output" for="event-destination-${id}">
         ${pointType}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${destinationInfo ? he.encode(destinationInfo.name) : ''}" list="destination-list-${id}">
+      <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${destinationInfo ? he.encode(destinationInfo.name) : ''}" list="destination-list-${id}"  ${isDisabled ? 'disabled' : ''}>
       <datalist id="destination-list-${id}">
 ${destinationsList}
       </datalist>
@@ -114,10 +119,10 @@ ${destinationsList}
 
     <div class="event__field-group  event__field-group--time">
       <label class="visually-hidden" for="event-start-time-${id}">From</label>
-      <input class="event__input  event__input--time" id="event-start-time-${id}" type="text" name="event-start-time" value='${formatEditDatetime(dateFrom)}'>
+      <input class="event__input  event__input--time" id="event-start-time-${id}" type="text" name="event-start-time" value='${formatEditDatetime(dateFrom)}'  ${isDisabled ? 'disabled' : ''}>
       &mdash;
       <label class="visually-hidden" for="event-end-time-${id}">To</label>
-      <input class="event__input  event__input--time" id="event-end-time-${id}" type="text" name="event-end-time" value='${formatEditDatetime(dateTo)}'>
+      <input class="event__input  event__input--time" id="event-end-time-${id}" type="text" name="event-end-time" value='${formatEditDatetime(dateTo)}'  ${isDisabled ? 'disabled' : ''}>
     </div>
 
     <div class="event__field-group  event__field-group--price">
@@ -125,7 +130,7 @@ ${destinationsList}
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-${id}" type="text" name="event-price" value="${basePrice}">
+      <input class="event__input  event__input--price" id="event-price-${id}" type="text" name="event-price" value="${basePrice}" ${isDisabled ? 'disabled' : ''} >
     </div>
 
 ${controlsTemplate}
@@ -165,7 +170,7 @@ export default class EventFormView extends AbstractStatefulView{
   }
 
   get template(){
-    return createEventFormTemplate(this._state, this.#formType, this.#destinations, this.#offers );
+    return createEventFormTemplate(this._state, this.#formType, this.#destinations, this.#offers);
   }
 
   removeElement = () => {
@@ -330,11 +335,19 @@ export default class EventFormView extends AbstractStatefulView{
   static parseWaypointToState(waypoint){
     return {
       ...waypoint,
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
     };
   }
 
   static parseStateToWaypoint(state){
     const waypoint = {...state};
+
+    delete waypoint.isDisabled;
+    delete waypoint.isSaving;
+    delete waypoint.isDeleting;
+
     return waypoint;
   }
 

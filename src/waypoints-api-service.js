@@ -1,9 +1,6 @@
+import { ApiMethod } from './consts.js';
 import ApiService from './framework/api-service.js';
 
-const Method = {
-  GET: 'GET',
-  PUT: 'PUT',
-};
 
 export default class WaypointsApiService extends ApiService {
   get waypoints() {
@@ -21,10 +18,10 @@ export default class WaypointsApiService extends ApiService {
       .then(ApiService.parseResponse);
   }
 
-  async updateWaypoint(waypoint) {
+  async addWaypoint(waypoint) {
     const response = await this._load({
-      url: `points/${waypoint.id}`,
-      method: Method.PUT,
+      url: 'points',
+      method: ApiMethod.POST,
       body: JSON.stringify(this.#adaptToServer(waypoint)),
       headers: new Headers({'Content-Type': 'application/json'}),
     });
@@ -32,6 +29,29 @@ export default class WaypointsApiService extends ApiService {
     const parsedResponse = await ApiService.parseResponse(response);
 
     return parsedResponse;
+  }
+
+  async updateWaypoint(waypoint) {
+    const response = await this._load({
+      url: `points/${waypoint.id}`,
+      method: ApiMethod.PUT,
+      body: JSON.stringify(this.#adaptToServer(waypoint)),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    });
+
+    const parsedResponse = await ApiService.parseResponse(response);
+
+    return parsedResponse;
+  }
+
+
+  async deleteWaypoint(waypoint) {
+    const response = await this._load({
+      url: `points/${waypoint.id}`,
+      method: ApiMethod.DELETE,
+    });
+
+    return response;
   }
 
   #adaptToServer(waypoint){
