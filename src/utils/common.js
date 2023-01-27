@@ -1,7 +1,5 @@
 import dayjs from 'dayjs';
 
-const getRandomArrayItem = (items)=> items[Math.floor(Math.random() * items.length)];
-
 const getDurationInfo = ({days, hours, minutes}) =>{
   let durationInfo = '';
   if(days > 0){
@@ -37,7 +35,6 @@ const capitalizeFirstLetter = (word)=> word.charAt(0).toUpperCase() + word.slice
 const isEscapeKey = (evt)=>evt.key === 'Escape' || evt.key === 'Esc';
 
 export {
-  getRandomArrayItem,
   countDuration,
   getDurationInfo,
   capitalizeFirstLetter,

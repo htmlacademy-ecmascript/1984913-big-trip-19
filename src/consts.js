@@ -1,4 +1,3 @@
-const WAYPOINTS_AMOUNT = 4;
 const WAYPOINT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 const DEFAULT_POINT_TYPE = 'taxi';
 
@@ -64,4 +63,4 @@ const UpdateType = {
 const ApiData = {AUTHORIZATION :'Basic abc0123xz45678s',
   END_POINT : 'https://19.ecmascript.pages.academy/big-trip'};
 
-export {WAYPOINTS_AMOUNT, WAYPOINT_TYPES, BLANK_WAYPOINT,DEFAULT_POINT_TYPE,WaypointStatus, FormatPattern, FilterType, SortType, EmptyListMessage, UserAction,UpdateType, FormType, ApiData };
+export { WAYPOINT_TYPES, BLANK_WAYPOINT,DEFAULT_POINT_TYPE,WaypointStatus, FormatPattern, FilterType, SortType, EmptyListMessage, UserAction,UpdateType, FormType, ApiData };

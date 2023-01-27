@@ -20,7 +20,11 @@ const createFormTypeTemplate = (pointType, id)=>
 const createFormOffersTemplate = (offers, pointOffers, id)=>{
   const getOfferName = (title)=>{
     const titleParts = title.split(' ');
-    return titleParts[titleParts.length - 1];
+    const name = titleParts[titleParts.length - 1];
+    if(name === 'class'){
+      return titleParts[titleParts.length - 2];
+    }
+    return name;
   };
   return offers.map((offer)=> (
     `
@@ -99,11 +103,11 @@ ${typeListTemplate}
 </div>
 </div>
     <div class="event__field-group  event__field-group--destination">
-      <label class="event__label  event__type-output" for="event-destination-1">
+      <label class="event__label  event__type-output" for="event-destination-${id}">
         ${pointType}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationInfo ? he.encode(destinationInfo.name) : ''}" list="destination-list-1">
-      <datalist id="destination-list-1">
+      <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${destinationInfo ? he.encode(destinationInfo.name) : ''}" list="destination-list-${id}">
+      <datalist id="destination-list-${id}">
 ${destinationsList}
       </datalist>
     </div>
@@ -117,11 +121,11 @@ ${destinationsList}
     </div>
 
     <div class="event__field-group  event__field-group--price">
-      <label class="event__label" for="event-price-1">
+      <label class="event__label" for="event-price-${id}">
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+      <input class="event__input  event__input--price" id="event-price-${id}" type="text" name="event-price" value="${basePrice}">
     </div>
 
 ${controlsTemplate}
