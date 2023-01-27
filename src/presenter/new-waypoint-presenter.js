@@ -8,24 +8,23 @@ export default class NewWaypointPresenter {
   #eventsListContainer = null;
   #handleDataChange = null;
   #handleDestroy = null;
-  #destinations = [];
+
 
   #waypointAddComponent = null;
 
-  constructor({eventsListContainer, onDataChange, onDestroy, destinations}) {
+  constructor({eventsListContainer, onDataChange, onDestroy,}) {
     this.#eventsListContainer = eventsListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleDestroy = onDestroy;
-    this.#destinations = destinations;
   }
 
-  init() {
+  init(destinations, offers) {
     if (this.#waypointAddComponent !== null) {
       return;
     }
-
     this.#waypointAddComponent = new EventFormView({
-      destinations:this.#destinations,
+      destinations:destinations,
+      offers:offers,
       formType:FormType.ADDING,
       onSubmit: this.#handleFormSubmit,
       onReset: this.#handleFormReset,

@@ -1,6 +1,6 @@
 import { BLANK_WAYPOINT, WAYPOINT_TYPES, DEFAULT_POINT_TYPE, FormType } from '../consts.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import {getOffersByType, getDestination, isOfferChecked } from '../mocks/waypoint.js';
+import { getDestination,getOffersByType, isOfferChecked} from '../utils/waypoint.js';
 import { capitalizeFirstLetter } from '../utils/common.js';
 import { formatEditDatetime } from '../utils/format-dates.js';
 import flatpickr from 'flatpickr';
@@ -20,7 +20,11 @@ const createFormTypeTemplate = (pointType, id)=>
 const createFormOffersTemplate = (offers, pointOffers, id)=>{
   const getOfferName = (title)=>{
     const titleParts = title.split(' ');
-    return titleParts[titleParts.length - 1];
+    const name = titleParts[titleParts.length - 1];
+    if(name === 'class'){
+      return titleParts[titleParts.length - 2];
+    }
+    return name;
   };
   return offers.map((offer)=> (
     `
@@ -36,8 +40,8 @@ const createFormOffersTemplate = (offers, pointOffers, id)=>{
   ).join('');
 };
 
-const createFormOffersListTemplate = (pointType, pointOffers, id)=>{
-  const offersByType = getOffersByType(pointType);
+const createFormOffersListTemplate = (pointType, pointOffers, id, offersData)=>{
+  const offersByType = getOffersByType(pointType, offersData);
   if(!offersByType || !offersByType.offers || offersByType.offers.length === 0){
     return '';
   }
@@ -71,12 +75,12 @@ const createFormControlsTemplate = (formType)=>{
 `;};
 
 
-const createEventFormTemplate = (waypoint, formType, destinations)=>{
+const createEventFormTemplate = (waypoint, formType, destinations, offersData)=>{
   const {basePrice, dateFrom, dateTo, destination, offers, type, id } = waypoint;
   const pointType = type !== '' ? type : DEFAULT_POINT_TYPE;
   const typeListTemplate = createFormTypeTemplate(pointType,id);
-  const offersTemplate = createFormOffersListTemplate(type, offers,id);
-  const destinationInfo = getDestination(destination);
+  const offersTemplate = createFormOffersListTemplate(type, offers,id, offersData);
+  const destinationInfo = getDestination(destination, destinations);
   const controlsTemplate = createFormControlsTemplate(formType);
 
   const destinationsList = destinations?.map((item) => `<option value="${item.name}"></option>`).join('');
@@ -99,11 +103,11 @@ ${typeListTemplate}
 </div>
 </div>
     <div class="event__field-group  event__field-group--destination">
-      <label class="event__label  event__type-output" for="event-destination-1">
+      <label class="event__label  event__type-output" for="event-destination-${id}">
         ${pointType}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationInfo ? he.encode(destinationInfo.name) : ''}" list="destination-list-1">
-      <datalist id="destination-list-1">
+      <input class="event__input  event__input--destination" id="event-destination-${id}" type="text" name="event-destination" value="${destinationInfo ? he.encode(destinationInfo.name) : ''}" list="destination-list-${id}">
+      <datalist id="destination-list-${id}">
 ${destinationsList}
       </datalist>
     </div>
@@ -117,11 +121,11 @@ ${destinationsList}
     </div>
 
     <div class="event__field-group  event__field-group--price">
-      <label class="event__label" for="event-price-1">
+      <label class="event__label" for="event-price-${id}">
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+      <input class="event__input  event__input--price" id="event-price-${id}" type="text" name="event-price" value="${basePrice}">
     </div>
 
 ${controlsTemplate}
@@ -139,6 +143,7 @@ ${controlsTemplate}
 
 export default class EventFormView extends AbstractStatefulView{
   #destinations = null;
+  #offers = null;
   #formType = null;
   #handleSubmit = null;
   #handleReset = null;
@@ -147,7 +152,7 @@ export default class EventFormView extends AbstractStatefulView{
   #dateToPicker = null;
 
 
-  constructor({waypoint = BLANK_WAYPOINT, formType, onSubmit, onReset,onDeleteClick, destinations }){
+  constructor({waypoint = BLANK_WAYPOINT, formType, onSubmit, onReset,onDeleteClick, destinations, offers }){
     super();
     this._setState(EventFormView.parseWaypointToState(waypoint));
     this.#formType = formType;
@@ -155,11 +160,12 @@ export default class EventFormView extends AbstractStatefulView{
     this.#handleReset = onReset;
     this.#handleDeleteClick = onDeleteClick;
     this.#destinations = destinations;
+    this.#offers = offers;
     this._restoreHandlers();
   }
 
   get template(){
-    return createEventFormTemplate(this._state, this.#formType, this.#destinations);
+    return createEventFormTemplate(this._state, this.#formType, this.#destinations, this.#offers );
   }
 
   removeElement = () => {
