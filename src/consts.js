@@ -1,5 +1,6 @@
 const WAYPOINT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 const DEFAULT_POINT_TYPE = 'taxi';
+const TRIP_INFO_DESTINATIONS_MAX = 3;
 
 const FormType = {
   ADDING: 'adding',
@@ -11,6 +12,7 @@ const WaypointStatus = {
 };
 
 const FormatPattern = {
+  TRIP_INFO_DATE:'D MMM',
   DATE:'MMM D',
   TIME:'HH:mm',
   DATETIME:'DD/MM/YY HH:mm',
@@ -75,4 +77,4 @@ const TimeLimit = {
   UPPER_LIMIT: 1000,
 };
 
-export { WAYPOINT_TYPES, BLANK_WAYPOINT,DEFAULT_POINT_TYPE,WaypointStatus, FormatPattern, FilterType, SortType, EmptyListMessage, UserAction,UpdateType, FormType, ApiData, ApiMethod, TimeLimit };
+export { WAYPOINT_TYPES, BLANK_WAYPOINT,DEFAULT_POINT_TYPE,WaypointStatus, FormatPattern, FilterType, SortType, EmptyListMessage, UserAction,UpdateType, FormType, ApiData, ApiMethod, TimeLimit, TRIP_INFO_DESTINATIONS_MAX };
