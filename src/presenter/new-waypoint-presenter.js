@@ -1,6 +1,5 @@
 import {remove, render, RenderPosition} from '../framework/render.js';
 import EventFormView from '../view/event-form-view.js';
-import {nanoid} from 'nanoid';
 import {UserAction, UpdateType, FormType} from '../consts.js';
 import { isEscapeKey } from '../utils/common.js';
 
@@ -69,9 +68,8 @@ export default class NewWaypointPresenter {
     this.#handleDataChange(
       UserAction.ADD_WAYPOINT,
       UpdateType.MINOR,
-      {id: nanoid(), ...waypoint},
+      waypoint,
     );
-    this.destroy();
   };
 
   #handleFormReset = () => {
