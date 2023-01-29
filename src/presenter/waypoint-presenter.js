@@ -60,11 +60,38 @@ export default class WaypointPresenter{
     }
 
     if(this.#status === WaypointStatus.EDITING){
-      replace(this.#eventFormComponent, prevEventFormComponent);
+      replace(this.#waypointComponent, prevEventFormComponent);
+      this.#status = WaypointStatus.DEFAULT;
     }
 
     remove(prevWaypointComponent);
     remove(prevEventFormComponent);
+  }
+
+  setSaving() {
+    this.#eventFormComponent.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setDeleting() {
+    this.#eventFormComponent.updateElement({
+      isDisabled: true,
+      isDeleting: true,
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this.#eventFormComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#eventFormComponent.shake(resetFormState);
   }
 
   destroy(){
@@ -124,7 +151,6 @@ export default class WaypointPresenter{
     const isMinorUpdate = !isDatesFromEqual || !isDatesToEqual || !isBasePricesEqual;
     const updateType = isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH;
     this.#handleDataChange(UserAction.UPDATE_WAYPOINT,updateType ,update);
-    this.#replaceComponent('form');
   };
 
   #handleFormReset = ()=>{
