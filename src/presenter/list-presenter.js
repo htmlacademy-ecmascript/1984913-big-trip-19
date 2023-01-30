@@ -6,7 +6,6 @@ import { sortWaypointByPrice, sortWaypontByTime, sortWaypointByDay } from '../ut
 import {filter} from '../utils/filter.js';
 import SortView from '../view/sort-view';
 import EventsListView from '../view/events-list-view';
-import TripInfoView from '../view/trip-info-view';
 import EmptyListView from '../view/empty-list-view';
 import LoadingView from '../view/loading-view';
 import WaypointPresenter from './waypoint-presenter';
@@ -24,7 +23,6 @@ export default class ListPresenter{
   #sortComponent = null;
   #emptyListComponent = null;
   #eventsListComponent = new EventsListView();
-  #tripInfoComponent = new TripInfoView();
   #loadingComponent = new LoadingView();
 
 
@@ -183,10 +181,6 @@ export default class ListPresenter{
     render(this.#sortComponent, this.#eventsContainer);
   }
 
-  #renderTripInfo(){
-    render(this.#tripInfoComponent, this.#headerContainer, RenderPosition.AFTERBEGIN);
-  }
-
   #renderEventsList(){
     if(this.#isLoading){
       this.#renderLoading();
@@ -197,9 +191,7 @@ export default class ListPresenter{
     const waypointsAmount = waypoints.length;
     this.#renderSort();
 
-    if(waypointsAmount > 0){
-      this.#renderTripInfo();
-    } else{
+    if(waypointsAmount === 0){
       this.#renderEmptyList();
     }
     render(this.#eventsListComponent, this.#eventsContainer);
