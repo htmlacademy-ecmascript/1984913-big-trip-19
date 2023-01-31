@@ -159,7 +159,7 @@ export default class ListPresenter{
   }
 
   #renderEmptyList(){
-    this.#emptyListComponent = new EmptyListView ({filterType: this.#currentFilterType});
+    this.#emptyListComponent = new EmptyListView ({filterType: this.#filterType});
     render(this.#emptyListComponent, this.#eventsContainer);
   }
 
