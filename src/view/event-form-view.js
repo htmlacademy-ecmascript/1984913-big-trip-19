@@ -55,7 +55,7 @@ const createFormOffersListTemplate = (pointType, pointOffers, id, offersData, is
 
 };
 
-const createFormPhotosGallery = (pictures) =>{
+const createFormPhotosGalleryTemplate = (pictures) =>{
   if(!pictures || pictures.length === 0){
     return '';
   }
@@ -140,7 +140,7 @@ ${controlsTemplate}
    ${destinationInfo ? `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
       <p class="event__destination-description">${destinationInfo.description}</p>
-      ${createFormPhotosGallery(destinationInfo.pictures)}
+      ${createFormPhotosGalleryTemplate(destinationInfo.pictures)}
     </section>
   </section>` : ''}
 </form>

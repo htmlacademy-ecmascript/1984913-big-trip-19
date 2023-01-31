@@ -17,6 +17,13 @@ export default class WaypointsListModel extends Observable{
     return this.#waypoints;
   }
 
+  get destinations(){
+    return this.#destinations;
+  }
+
+  get offers(){
+    return this.#offers;
+  }
 
   async init(){
     const waypointsData = await this.#waypointsApiService.waypoints;
@@ -101,14 +108,6 @@ export default class WaypointsListModel extends Observable{
     delete adaptedWaypoint['is_favorite'];
 
     return adaptedWaypoint;
-  }
-
-  get destinations(){
-    return this.#destinations;
-  }
-
-  get offers(){
-    return this.#offers;
   }
 
 }
