@@ -141,7 +141,7 @@ export default class WaypointPresenter{
   };
 
   #handleFavoriteClick = ()=>{
-    this.#handleDataChange(UserAction.UPDATE_WAYPOINT, UpdateType.MINOR,{...this.#waypoint, isFavorite:!this.#waypoint.isFavorite});
+    this.#handleDataChange(UserAction.UPDATE_WAYPOINT, UpdateType.PATCH,{...this.#waypoint, isFavorite:!this.#waypoint.isFavorite});
   };
 
   #handleFormSubmit = (update)=>{
