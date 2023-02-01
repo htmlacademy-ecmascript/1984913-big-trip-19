@@ -37,6 +37,7 @@ export default class WaypointsListModel extends Observable{
       this.#waypoints = [];
       this.#destinations = [];
       this.#offers = [];
+      this._notify(UpdateType.INIT_ERROR);
     }
     this._notify(UpdateType.INIT);
   }
@@ -56,15 +57,10 @@ export default class WaypointsListModel extends Observable{
   }
 
   async updateWaypoint(updateType, update){
-    const index = this.#waypoints.findIndex((waypoint) => waypoint.id === update.id);
-
-    if (index === -1) {
-      throw new Error('Can\'t update unexisting waypoint');
-    }
-
     try {
       const response = await this.#waypointsApiService.updateWaypoint(update);
       const updatedWaypoint = this.#adaptToClient(response);
+      const index = this.#waypoints.findIndex((waypoint) => waypoint.id === update.id);
       this.#waypoints = [
         ...this.#waypoints.slice(0, index),
         updatedWaypoint,
@@ -77,13 +73,10 @@ export default class WaypointsListModel extends Observable{
   }
 
   async deleteWaypoint(updateType, update){
-    const index = this.#waypoints.findIndex((waypoint) => waypoint.id === update.id);
-
-    if (index === -1) {
-      throw new Error('Can\'t delete unexisting waypoint');
-    }
     try {
       await this.#waypointsApiService.deleteWaypoint(update);
+      const index = this.#waypoints.findIndex((waypoint) => waypoint.id === update.id);
+
       this.#waypoints = [
         ...this.#waypoints.slice(0, index),
         ...this.#waypoints.slice(index + 1),

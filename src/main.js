@@ -19,15 +19,18 @@ const waypointsListModel = new WaypointsListModel({
 const filtersModel = new FiltersModel();
 
 const filtersPresenter = new FiltersPresenter( {filtersContainer, filtersModel, waypointsListModel });
-const listPresenter = new ListPresenter( {headerContainer, eventsContainer, filtersModel,waypointsListModel, onNewWaypointDestroy:handleNewEventFormClose });
+const listPresenter = new ListPresenter( {eventsContainer, filtersModel,waypointsListModel, onNewWaypointDestroy:handleNewEventFormClose, handleAddWaypointButtonStatus:handleAddWaypointButtonStatus });
 const tripInfoPresenter = new TripInfoPresenter({headerContainer, waypointsListModel});
-const addWaypointButtonComponent = new AddWaypoinButtonView({onAddClick: handleAddWaypoinButtonClick});
-function handleAddWaypoinButtonClick (){
+const addWaypointButtonComponent = new AddWaypoinButtonView({onAddClick: handleAddWaypointButtonClick});
+function handleAddWaypointButtonClick (){
   listPresenter.createWaypoint();
-  addWaypointButtonComponent.element.disabled = true;
+  handleAddWaypointButtonStatus(true);
 }
 function handleNewEventFormClose (){
-  addWaypointButtonComponent.element.disabled = false;
+  handleAddWaypointButtonStatus(false);
+}
+function handleAddWaypointButtonStatus (value){
+  addWaypointButtonComponent.element.disabled = value;
 }
 render (addWaypointButtonComponent, headerContainer, RenderPosition.BEFOREEND);
 

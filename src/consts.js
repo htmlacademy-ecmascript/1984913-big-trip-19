@@ -60,6 +60,7 @@ const UpdateType = {
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
   INIT: 'INIT',
+  INIT_ERROR: 'INIT_ERROR',
 };
 
 const ApiData = {AUTHORIZATION :'Basic abc0123xz45678s',
