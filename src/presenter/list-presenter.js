@@ -231,7 +231,9 @@ export default class ListPresenter{
     this.#waypointPresenter.clear();
     this.#newWaypointPresenter.destroy();
     remove(this.#sortComponent);
-    remove(this.#emptyListComponent);
+    if(this.#emptyListComponent){
+      remove(this.#emptyListComponent);
+    }
     if(resetSortType){
       this.#currentSortType = SortType.DAY;
     }
