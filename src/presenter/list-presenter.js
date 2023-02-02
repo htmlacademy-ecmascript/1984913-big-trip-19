@@ -1,5 +1,5 @@
 
-import { render, remove } from '../framework/render';
+import { render, remove, RenderPosition } from '../framework/render';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import { FilterType, SortType, UpdateType, UserAction, TimeLimit} from '../consts';
 import { sortWaypointByPrice, sortWaypontByTime, sortWaypointByDay } from '../utils/waypoint';
@@ -11,9 +11,11 @@ import LoadingView from '../view/loading-view';
 import LoadingErrorView from '../view/loading-error-view';
 import WaypointPresenter from './waypoint-presenter';
 import NewWaypointPresenter from './new-waypoint-presenter';
+import TripInfoView from '../view/trip-info-view';
 
 export default class ListPresenter{
   #eventsContainer = null;
+  #headerContainer = null;
 
   #waypointsListModel = null;
   #filtersModel = null;
@@ -21,6 +23,7 @@ export default class ListPresenter{
   #filterType = null;
 
   #sortComponent = null;
+  #tripInfoComponent = null;
   #emptyListComponent = null;
   #eventsListComponent = new EventsListView();
   #loadingComponent = new LoadingView();
@@ -38,8 +41,9 @@ export default class ListPresenter{
     upperLimit: TimeLimit.UPPER_LIMIT
   });
 
-  constructor({eventsContainer,filtersModel, waypointsListModel, onNewWaypointDestroy, handleAddWaypointButtonStatus }){
+  constructor({eventsContainer,headerContainer, filtersModel, waypointsListModel, onNewWaypointDestroy, handleAddWaypointButtonStatus }){
     this.#eventsContainer = eventsContainer;
+    this.#headerContainer = headerContainer;
     this.#waypointsListModel = waypointsListModel;
     this.#filtersModel = filtersModel;
 
@@ -155,11 +159,20 @@ export default class ListPresenter{
         this.#isLoading = false;
         this.#isLoadingError = true;
         remove(this.#loadingComponent);
+        this.#clearEventsList();
         this.#renderEventsList();
         break;
       }
     }
   };
+
+  #renderTripInfo(){
+    if(!this.waypoints.length || !this.offers.length){
+      return ;
+    }
+    this.#tripInfoComponent = new TripInfoView(this.waypoints, this.destinations, this.offers);
+    render(this.#tripInfoComponent, this.#headerContainer, RenderPosition.AFTERBEGIN);
+  }
 
   #renderWaypoint(waypoint, destinations, offers){
     const waypointPresenter = new WaypointPresenter({
@@ -198,6 +211,9 @@ export default class ListPresenter{
   };
 
   #renderSort(){
+    if(this.#isLoadingError){
+      return;
+    }
     this.#sortComponent = new SortView({currentSortType:this.#currentSortType,onSortTypeChange: this.#handleSortTypeChange});
     render(this.#sortComponent, this.#eventsContainer);
   }
@@ -211,6 +227,8 @@ export default class ListPresenter{
 
     if(this.#isLoadingError){
       this.#renderLoadingError();
+      remove(this.#sortComponent);
+      this.#handleAddWaypointButtonStatus(true);
       return;
     }
     this.#handleAddWaypointButtonStatus(false);
@@ -222,8 +240,10 @@ export default class ListPresenter{
       this.#renderSort();
     }
 
+
     render(this.#eventsListComponent, this.#eventsContainer);
     this.#renderWaypoints(waypoints);
+    this.#renderTripInfo();
   }
 
   #clearEventsList({resetSortType = false} = {}){
@@ -231,6 +251,7 @@ export default class ListPresenter{
     this.#waypointPresenter.clear();
     this.#newWaypointPresenter.destroy();
     remove(this.#sortComponent);
+    remove(this.#tripInfoComponent);
     if(this.#emptyListComponent){
       remove(this.#emptyListComponent);
     }

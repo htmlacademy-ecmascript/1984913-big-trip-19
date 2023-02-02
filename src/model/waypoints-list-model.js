@@ -33,13 +33,13 @@ export default class WaypointsListModel extends Observable{
       this.#waypoints = waypointsData.map(this.#adaptToClient);
       this.#destinations = destinationsData;
       this.#offers = offersData;
+      this._notify(UpdateType.INIT);
     }catch(err){
       this.#waypoints = [];
       this.#destinations = [];
       this.#offers = [];
       this._notify(UpdateType.INIT_ERROR);
     }
-    this._notify(UpdateType.INIT);
   }
 
   async addWaypoint(updateType, update){
