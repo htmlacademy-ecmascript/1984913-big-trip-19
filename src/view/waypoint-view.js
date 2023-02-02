@@ -2,40 +2,45 @@ import AbstractView from '../framework/view/abstract-view.js';
 import { countDuration, getDurationInfo} from '../utils/common.js';
 import { getDestination, getCheckedOffers} from '../utils/waypoint.js';
 import { formatDate, formatTime, formatDatetimeEvent } from '../utils/format-dates.js';
+import he from 'he';
 
 const createOffersTemplate = (offers)=> offers.map((offer)=> `<li class="event__offer">
-<span class="event__offer-title">${offer.title}</span>
+<span class="event__offer-title">${he.encode(offer.title)}</span>
 &plus;&euro;&nbsp;
-<span class="event__offer-price">${offer.price}</span>
+<span class="event__offer-price">${he.encode(offer.price.toString())}</span>
 </li>`).join('');
 
 
 const createWaypointTemplate = (waypoint, destinations, offersData)=>{
   const {basePrice, dateFrom, dateTo, destination, isFavorite, offers, type } = waypoint;
-  const date = formatDate(dateFrom);
-  const startTime = formatTime(dateFrom);
-  const endTime = formatTime(dateTo);
+  const date = he.encode(formatDate(dateFrom));
+  const startTime = he.encode(formatTime(dateFrom));
+  const eventDate = he.encode(formatDatetimeEvent(dateFrom,0,10));
+  const startDateTime = he.encode( formatDatetimeEvent(dateFrom,0,16));
+  const endTime = he.encode(formatTime(dateTo));
+  const endDateTime = he.encode(formatDatetimeEvent(dateTo,0,16));
+
   const duration = getDurationInfo(countDuration(dateFrom,dateTo));
   const favoriteClassName = isFavorite ? 'event__favorite-btn--active' : '';
   const destinationInfo = getDestination(destination, destinations);
   const checkedOffers = getCheckedOffers(type, offers, offersData);
   return(` <li class="trip-events__item">
 <div class="event">
-  <time class="event__date" datetime=${formatDatetimeEvent(dateFrom,0,10)}>${date}</time>
+  <time class="event__date" datetime=${eventDate}>${date}</time>
   <div class="event__type">
     <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
   </div>
-  <h3 class="event__title">${type} ${destinationInfo.name}</h3>
+  <h3 class="event__title">${type} ${he.encode(destinationInfo.name)}</h3>
   <div class="event__schedule">
     <p class="event__time">
-      <time class="event__start-time" datetime=${formatDatetimeEvent(dateFrom,0,16)}>${startTime}</time>
+      <time class="event__start-time" datetime=${startDateTime}>${startTime}</time>
       &mdash;
-      <time class="event__end-time" datetime=${formatDatetimeEvent(dateTo,0,16)}>${endTime}</time>
+      <time class="event__end-time" datetime=${endDateTime}>${endTime}</time>
     </p>
     <p class="event__duration">${duration}</p>
   </div>
   <p class="event__price">
-    &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
+    &euro;&nbsp;<span class="event__price-value">${he.encode(basePrice.toString())}</span>
   </p>
   ${checkedOffers ?
       `<h4 class="visually-hidden">Offers:</h4>

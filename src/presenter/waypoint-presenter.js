@@ -69,20 +69,28 @@ export default class WaypointPresenter{
   }
 
   setSaving() {
-    this.#eventFormComponent.updateElement({
-      isDisabled: true,
-      isSaving: true,
-    });
+    if(this.#status === WaypointStatus.EDITING){
+      this.#eventFormComponent.updateElement({
+        isDisabled: true,
+        isSaving: true,
+      });
+    }
   }
 
   setDeleting() {
-    this.#eventFormComponent.updateElement({
-      isDisabled: true,
-      isDeleting: true,
-    });
+    if(this.#status === WaypointStatus.EDITING){
+      this.#eventFormComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
   }
 
   setAborting() {
+    if (this.#status === WaypointStatus.DEFAULT) {
+      this.#waypointComponent.shake();
+      return;
+    }
     const resetFormState = () => {
       this.#eventFormComponent.updateElement({
         isDisabled: false,
@@ -141,7 +149,7 @@ export default class WaypointPresenter{
   };
 
   #handleFavoriteClick = ()=>{
-    this.#handleDataChange(UserAction.UPDATE_WAYPOINT, UpdateType.MINOR,{...this.#waypoint, isFavorite:!this.#waypoint.isFavorite});
+    this.#handleDataChange(UserAction.UPDATE_WAYPOINT, UpdateType.PATCH,{...this.#waypoint, isFavorite:!this.#waypoint.isFavorite},);
   };
 
   #handleFormSubmit = (update)=>{

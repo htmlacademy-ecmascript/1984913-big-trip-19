@@ -26,17 +26,19 @@ const createFormOffersTemplate = (offers, pointOffers, id, isDisabled)=>{
     }
     return name;
   };
-  return offers.map((offer)=> (
-    `
+  return offers.map((offer)=> {
+    const offerTitle = he.encode(offer.title);
+    const offerPrice = he.encode(offer.price.toString());
+    return `
 <div class="event__offer-selector">
-<input class="event__offer-checkbox  visually-hidden" id="event-offer-${getOfferName(offer.title)}-${id}" type="checkbox" name="event-offer-${getOfferName(offer.title)}" ${isOfferChecked(pointOffers, offer) ? 'checked' : ''}  data-offer-id="${offer.id}  ${isDisabled ? 'disabled' : ''}">
-<label class="event__offer-label" for="event-offer-${getOfferName(offer.title)}-${id}" >
-  <span class="event__offer-title">${offer.title}</span>
+<input class="event__offer-checkbox  visually-hidden" id="event-offer-${getOfferName(offerTitle)}-${id}" type="checkbox" name="event-offer-${getOfferName(offerTitle)}" ${isOfferChecked(pointOffers, offer) ? 'checked' : ''}  data-offer-id="${offer.id}  ${isDisabled ? 'disabled' : ''}">
+<label class="event__offer-label" for="event-offer-${getOfferName(offerTitle)}-${id}" >
+  <span class="event__offer-title">${ offerTitle}</span>
   &plus;&euro;&nbsp;
-  <span class="event__offer-price">${offer.price}</span>
+  <span class="event__offer-price">${ offerPrice}</span>
 </label>
 </div>
-  `)
+  `;}
   ).join('');
 };
 
@@ -88,6 +90,8 @@ const createEventFormTemplate = (waypoint, formType, destinations, offersData,)=
   const offersTemplate = createFormOffersListTemplate(type, offers,id, offersData);
   const destinationInfo = getDestination(destination, destinations);
   const controlsTemplate = createFormControlsTemplate(formType,isDisabled, isSaving, isDeleting);
+  const startDate = formatEditDatetime(dateFrom);
+  const endDate = formatEditDatetime(dateTo);
   const destinationsList = destinations?.map((item) => `<option value="${item.name}"></option>`).join('');
 
   return(`   <li class="trip-events__item">
@@ -119,10 +123,10 @@ ${destinationsList}
 
     <div class="event__field-group  event__field-group--time">
       <label class="visually-hidden" for="event-start-time-${id}">From</label>
-      <input class="event__input  event__input--time" id="event-start-time-${id}" type="text" name="event-start-time" value='${formatEditDatetime(dateFrom)}'  ${isDisabled ? 'disabled' : ''}>
+      <input class="event__input  event__input--time" id="event-start-time-${id}" type="text" name="event-start-time" value='${he.encode(startDate)}'  ${isDisabled ? 'disabled' : ''}>
       &mdash;
       <label class="visually-hidden" for="event-end-time-${id}">To</label>
-      <input class="event__input  event__input--time" id="event-end-time-${id}" type="text" name="event-end-time" value='${formatEditDatetime(dateTo)}'  ${isDisabled ? 'disabled' : ''}>
+      <input class="event__input  event__input--time" id="event-end-time-${id}" type="text" name="event-end-time" value='${he.encode(endDate)}'  ${isDisabled ? 'disabled' : ''}>
     </div>
 
     <div class="event__field-group  event__field-group--price">
@@ -130,7 +134,7 @@ ${destinationsList}
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-${id}" type="text" name="event-price" value="${basePrice}" ${isDisabled ? 'disabled' : ''} >
+      <input class="event__input  event__input--price" id="event-price-${id}" type="text" name="event-price" value="${he.encode(basePrice.toString())}" ${isDisabled ? 'disabled' : ''} >
     </div>
 
 ${controlsTemplate}
@@ -139,7 +143,7 @@ ${controlsTemplate}
    ${offersTemplate}
    ${destinationInfo ? `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-      <p class="event__destination-description">${destinationInfo.description}</p>
+      <p class="event__destination-description">${he.encode(destinationInfo.description)}</p>
       ${createFormPhotosGalleryTemplate(destinationInfo.pictures)}
     </section>
   </section>` : ''}
@@ -217,19 +221,6 @@ export default class EventFormView extends AbstractStatefulView{
   #submitHandler = (evt)=>{
     evt.preventDefault();
 
-    const submitButton = this.element.querySelector('.event__save-btn');
-    const destination = this.element.querySelector('.event__input--destination').value;
-    const price = this.element.querySelector('.event__input--price').value;
-
-    if (price < 1) {
-      submitButton.disabled = true;
-      return;
-    }
-
-    if (destination === '') {
-      submitButton.disabled = true;
-      return;
-    }
     this.#handleSubmit(EventFormView.parseStateToWaypoint(this._state));
   };
 
@@ -269,14 +260,16 @@ export default class EventFormView extends AbstractStatefulView{
   #priceChangeHandler = (evt)=>{
     evt.preventDefault();
     const newPrice = evt.target.value;
-    if(Number(newPrice)){
+    if(Number(newPrice) && newPrice >= 1){
       this._setState({
         basePrice: +newPrice
-      });}
+      });
+    }
     else{
-      evt.target.value = 0;
+      evt.target.value = this._state.basePrice;
     }
   };
+
 
   #offerCheckHandler = (evt) => {
     evt.preventDefault();

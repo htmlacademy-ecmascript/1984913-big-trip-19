@@ -7,11 +7,12 @@ export default class NewWaypointPresenter {
   #eventsListContainer = null;
   #handleDataChange = null;
   #handleDestroy = null;
+  #restoreEmptyList = null;
 
 
   #waypointAddComponent = null;
 
-  constructor({eventsListContainer, onDataChange, onDestroy,}) {
+  constructor({eventsListContainer, onDataChange, onDestroy}) {
     this.#eventsListContainer = eventsListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleDestroy = onDestroy;
