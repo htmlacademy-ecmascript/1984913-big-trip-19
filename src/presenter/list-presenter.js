@@ -12,6 +12,7 @@ import LoadingErrorView from '../view/loading-error-view';
 import WaypointPresenter from './waypoint-presenter';
 import NewWaypointPresenter from './new-waypoint-presenter';
 import TripInfoView from '../view/trip-info-view';
+import { isEmptyInfo } from '../utils/common';
 
 export default class ListPresenter{
   #eventsContainer = null;
@@ -167,10 +168,11 @@ export default class ListPresenter{
   };
 
   #renderTripInfo(){
-    if(!this.waypoints.length || !this.offers.length){
-      return ;
+    const allWaypoints = this.#waypointsListModel.waypoints;
+    if(!allWaypoints.length){
+      return '';
     }
-    this.#tripInfoComponent = new TripInfoView(this.waypoints, this.destinations, this.offers);
+    this.#tripInfoComponent = new TripInfoView(allWaypoints, this.destinations, this.offers);
     render(this.#tripInfoComponent, this.#headerContainer, RenderPosition.AFTERBEGIN);
   }
 
@@ -225,7 +227,7 @@ export default class ListPresenter{
       return;
     }
 
-    if(this.#isLoadingError){
+    if(this.#isLoadingError || isEmptyInfo(this.destinations) || isEmptyInfo(this.offers)){
       this.#renderLoadingError();
       remove(this.#sortComponent);
       this.#handleAddWaypointButtonStatus(true);

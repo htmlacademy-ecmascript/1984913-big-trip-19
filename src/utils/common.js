@@ -31,6 +31,7 @@ const countDuration = (start, end)=> {
 
 const capitalizeFirstLetter = (word)=> word.charAt(0).toUpperCase() + word.slice(1);
 
+const isEmptyInfo = (info)=> !info || !info.length;
 
 const isEscapeKey = (evt)=>evt.key === 'Escape' || evt.key === 'Esc';
 
@@ -38,5 +39,6 @@ export {
   countDuration,
   getDurationInfo,
   capitalizeFirstLetter,
+  isEmptyInfo,
   isEscapeKey
 };

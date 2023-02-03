@@ -1,5 +1,6 @@
 import { TRIP_INFO_DESTINATIONS_MAX } from '../consts.js';
 import AbstractStatefulView from '../framework/view/abstract-view.js';
+import { isEmptyInfo } from '../utils/common.js';
 import { formatDate } from '../utils/format-dates.js';
 import { getCheckedOffers, getDestination } from '../utils/waypoint.js';
 
@@ -34,7 +35,7 @@ export default class TripInfoView extends AbstractStatefulView{
   }
 
   #getDestinations = () => {
-    if (!this.#waypoints || !this.#waypoints.length) {
+    if (isEmptyInfo(this.#waypoints)) {
       return '';
     }
 
@@ -54,7 +55,7 @@ export default class TripInfoView extends AbstractStatefulView{
   };
 
   #getTripPrice = () => {
-    if (!this.#waypoints || !this.#waypoints.length) {
+    if (isEmptyInfo(this.#waypoints)) {
       return '';
     }
 
@@ -68,7 +69,7 @@ export default class TripInfoView extends AbstractStatefulView{
   };
 
   #getTripDates = () => {
-    if (!this.#waypoints || !this.#waypoints.length) {
+    if (isEmptyInfo(this.#waypoints)) {
       return '';
     }
 
