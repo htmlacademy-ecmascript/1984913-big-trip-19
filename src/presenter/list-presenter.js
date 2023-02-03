@@ -58,7 +58,10 @@ export default class ListPresenter{
       onDataChange:this.#handleViewAction,
       onDestroy:()=>{
         onNewWaypointDestroy();
-        this.#renderEmptyList();},
+        if(this.waypoints === 0){
+          this.#renderEmptyList();
+        }
+      },
       destinations:this.destinations,
       offers:this.offers,
     });
@@ -141,6 +144,8 @@ export default class ListPresenter{
     switch(updateType){
       case UpdateType.PATCH:
         this.#waypointPresenter.get(data.id).init(data, this.destinations, this.offers);
+        remove(this.#tripInfoComponent);
+        this.#renderTripInfo();
         break;
       case UpdateType.MINOR:
         this.#clearEventsList();
@@ -168,7 +173,7 @@ export default class ListPresenter{
   };
 
   #renderTripInfo(){
-    const allWaypoints = this.#waypointsListModel.waypoints;
+    const allWaypoints = [...this.#waypointsListModel.waypoints].sort(sortWaypointByDay);
     if(!allWaypoints.length){
       return '';
     }
@@ -234,9 +239,7 @@ export default class ListPresenter{
       return;
     }
     this.#handleAddWaypointButtonStatus(false);
-    const waypoints = this.waypoints;
-    const waypointsAmount = waypoints.length;
-    if(waypointsAmount === 0 && !this.#isLoading){
+    if(this.waypoints.length === 0 && !this.#isLoading){
       this.#renderEmptyList();
     }else{
       this.#renderSort();
@@ -244,7 +247,7 @@ export default class ListPresenter{
 
 
     render(this.#eventsListComponent, this.#eventsContainer);
-    this.#renderWaypoints(waypoints);
+    this.#renderWaypoints(this.waypoints);
     this.#renderTripInfo();
   }
 

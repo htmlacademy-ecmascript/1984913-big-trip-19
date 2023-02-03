@@ -156,8 +156,7 @@ export default class WaypointPresenter{
     const isDatesFromEqual = isDatesEqual(this.#waypoint.dateFrom, update.dateFrom);
     const isDatesToEqual = isDatesEqual(this.#waypoint.dateTo, update.dateTo);
     const isBasePricesEqual = this.#waypoint.basePrice === update.basePrice;
-    const isDestinationsEqual = this.#waypoint.destination === update.destination;
-    const isMinorUpdate = !isDatesFromEqual || !isDatesToEqual || !isBasePricesEqual || !isDestinationsEqual;
+    const isMinorUpdate = !isDatesFromEqual || !isDatesToEqual || !isBasePricesEqual;
     const updateType = isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH;
     this.#handleDataChange(UserAction.UPDATE_WAYPOINT,updateType ,update);
   };
