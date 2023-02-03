@@ -18,7 +18,7 @@ const waypointsListModel = new WaypointsListModel({
 const filtersModel = new FiltersModel();
 
 const filtersPresenter = new FiltersPresenter( {filtersContainer, filtersModel, waypointsListModel });
-const listPresenter = new ListPresenter( {eventsContainer,headerContainer, filtersModel,waypointsListModel, onNewWaypointDestroy:handleNewEventFormClose, handleAddWaypointButtonStatus:handleAddWaypointButtonStatus });
+const listPresenter = new ListPresenter( {eventsContainer, headerContainer, filtersModel,waypointsListModel, onNewWaypointDestroy:handleNewEventFormClose, handleAddWaypointButtonStatus:handleAddWaypointButtonStatus });
 const addWaypointButtonComponent = new AddWaypoinButtonView({onAddClick: handleAddWaypointButtonClick});
 function handleAddWaypointButtonClick (){
   listPresenter.createWaypoint();
