@@ -6,7 +6,6 @@ import { render, RenderPosition } from './framework/render.js';
 import FiltersModel from './model/filters-model.js';
 import WaypointsApiService from './waypoints-api-service.js';
 import { ApiData } from './consts.js';
-import TripInfoPresenter from './presenter/trip-info-presenter.js';
 
 
 const headerContainer = document.querySelector('.trip-main');
@@ -19,8 +18,7 @@ const waypointsListModel = new WaypointsListModel({
 const filtersModel = new FiltersModel();
 
 const filtersPresenter = new FiltersPresenter( {filtersContainer, filtersModel, waypointsListModel });
-const listPresenter = new ListPresenter( {eventsContainer, filtersModel,waypointsListModel, onNewWaypointDestroy:handleNewEventFormClose, handleAddWaypointButtonStatus:handleAddWaypointButtonStatus });
-const tripInfoPresenter = new TripInfoPresenter({headerContainer, waypointsListModel});
+const listPresenter = new ListPresenter( {eventsContainer, headerContainer, filtersModel,waypointsListModel, onNewWaypointDestroy:handleNewEventFormClose, handleAddWaypointButtonStatus:handleAddWaypointButtonStatus });
 const addWaypointButtonComponent = new AddWaypoinButtonView({onAddClick: handleAddWaypointButtonClick});
 function handleAddWaypointButtonClick (){
   listPresenter.createWaypoint();
@@ -37,5 +35,4 @@ render (addWaypointButtonComponent, headerContainer, RenderPosition.BEFOREEND);
 
 filtersPresenter.init();
 listPresenter.init();
-tripInfoPresenter.init();
 waypointsListModel.init();
